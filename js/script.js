@@ -44,22 +44,35 @@ setupLineGraph();
 setupBarGraph();
 
 function setupLineGraph() {
-    const svg = lineGraphSvg;
+    // Dynamically set the height and width of the graphs
+    const mapHeight = document.querySelector("#map-container").clientHeight; 
+    const graphHeight = mapHeight / 3; // Each graph should be 1/3 the height of the map
+    const graphWidth = graphHeight * 1.6; // Width should be 1.4 times the height
 
-    // X-axis scale
+    // Apply these dimensions to each graph container
+    document.querySelectorAll(".graph").forEach(graph => {
+        graph.style.height = `${graphHeight}px`;
+        graph.style.width = `${graphWidth}px`;
+    });
+
+    // Update SVG sizes to match
+    d3.selectAll(".graph svg")
+        .attr("width", graphWidth)
+        .attr("height", graphHeight);
+
+    const svg = d3.select("#line-graph").select("svg");
+
+    // X-axis scale and setup
     const xScale = d3.scaleLinear()
-        .domain([2019, 2024])  // Ensure the x-axis has 1-year increments
-        .range([MARGIN.left, CHART_WIDTH - MARGIN.right]);
-    
-    // X-axis setup
-    const xAxis = d3.axisBottom(xScale)
-        .ticks(6)  // Set the number of ticks equal to the number of years
-        .tickFormat(d3.format("d"));  // Ensure the format is integer (years)
+        .domain([2019, 2024])
+        .range([MARGIN.left, graphWidth - MARGIN.right]);
+    const xAxis = d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d"));
 
-    // Y-axis scale
+    // Y-axis scale and setup
     const yScale = d3.scaleLinear()
-        .domain([0, 10000000])  // Adjust based on maximum population
-        .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
+        .domain([0, 10000000])
+        .range([graphHeight - MARGIN.bottom, MARGIN.top]);
+    const yAxis = d3.axisLeft(yScale);
 
     // Add x-axis
     svg.append("g")
@@ -179,6 +192,12 @@ function updateLineGraph() {
         .style("font-size", "16px")
         .style("font-weight", "bold")
         .text(selectedState);
+
+    linePath.exit()
+        .transition()
+        .duration(500)
+        .attr("opacity", 0)  // Fade out
+        .remove();  // Remove element after the transition
 }
 
 function setupBarGraph() {
@@ -258,22 +277,22 @@ function updateBarGraph() {
     const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
     const yAxis = d3.axisLeft(yScale);
 
-    // Draw or update x-axis without transitions
+    // Draw or update x-axis
     barGraphSvg.select(".x-axis-bar").remove();  // Clear previous x-axis before updating
     barGraphSvg.append("g")
         .attr("transform", `translate(0,${BAR_CHART_HEIGHT - MARGIN.bottom})`)
         .attr("class", "x-axis-bar")
         .call(xAxis);
 
-    // Draw or update y-axis without transitions
+    // Draw or update y-axis
     barGraphSvg.select(".y-axis-bar").remove();  // Clear previous y-axis before updating
     barGraphSvg.append("g")
         .attr("transform", `translate(${MARGIN.left},0)`)
         .attr("class", "y-axis-bar")
         .call(yAxis);
 
-    // Create the bars with transitions
-    const bars = barGraphSvg.selectAll(".bar-chart")
+    // Bind data to the bars
+    const bars = barGraphSvg.selectAll("rect.bar-chart")
         .data(selectedStateData, d => d.year);
 
     // Enter new bars
@@ -281,14 +300,14 @@ function updateBarGraph() {
         .append("rect")
         .attr("class", "bar-chart")
         .attr("x", d => xScale(d.year))
-        .attr("y", yScale(0))  // Start bars from the bottom
+        .attr("y", d => yScale(yMin))  // Start at yMin, not the container bottom
         .attr("width", xScale.bandwidth())
-        .attr("height", 0)
+        .attr("height", 0)  // Start with height 0
         .attr("fill", "steelblue")
         .transition()
         .duration(800)  // Duration for the smooth transition
-        .attr("y", d => yScale(d.population))
-        .attr("height", d => BAR_CHART_HEIGHT - MARGIN.bottom - yScale(d.population));
+        .attr("y", d => yScale(d.population))  // Move to final y position
+        .attr("height", d => BAR_CHART_HEIGHT - MARGIN.bottom - yScale(d.population));  // Grow to the final height
 
     // Update existing bars
     bars.transition()
@@ -297,13 +316,6 @@ function updateBarGraph() {
         .attr("y", d => yScale(d.population))
         .attr("width", xScale.bandwidth())
         .attr("height", d => BAR_CHART_HEIGHT - MARGIN.bottom - yScale(d.population));
-
-    // Exit and remove old bars with transitions
-    bars.exit()
-        .transition()
-        .duration(500)
-        .attr("opacity", 0)
-        .remove();
 
     // Add state label as the title
     barGraphSvg.append("text")
@@ -315,7 +327,6 @@ function updateBarGraph() {
         .style("font-weight", "bold")
         .text(selectedState);
 }
-
 
 // Add logic to call both updateLineGraph and updateBarGraph when a state is selected
 function updateGraphs() {
