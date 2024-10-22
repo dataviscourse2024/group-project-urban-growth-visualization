@@ -7,9 +7,28 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <style>
+        #container {
+            display: flex;
+        }
+        #map-container {
+            flex: 1;
+            padding: 10px;
+        }
+        #graphs-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 10px;
+            justify-content: space-between;
+        }
+        .graph {
+            width: 100%;
+            height: 200px;
+            border: 2px solid black; /* Outlining the containers in black */
+        }
         svg {
             width: 100%;
-            height: 600px;
+            height: 100%;
         }
         .tooltip {
             position: absolute;
@@ -39,9 +58,19 @@
         </select>
     </div>
 
-    <!-- Embed the provided SVG -->
-    <div id="map-container">
-        <object type="image/svg+xml" id="us-map-svg" data="chart.svg"></object>
+    <!-- Container for the map and the graphs -->
+    <div id="container">
+        <!-- Embed the provided SVG -->
+        <div id="map-container">
+            <object type="image/svg+xml" id="us-map-svg" data="chart.svg"></object>
+        </div>
+
+        <!-- Container for the graphs -->
+        <div id="graphs-container">
+            <div id="graph-1" class="graph"></div> <!-- First graph container -->
+            <div id="graph-2" class="graph"></div> <!-- Second graph container -->
+            <div id="graph-3" class="graph"></div> <!-- Third graph container -->
+        </div>
     </div>
 
     <!-- Tooltip for interaction -->
