@@ -9,7 +9,7 @@ const BAR_CHART_HEIGHT = document.querySelector("#bar-graph").clientHeight;
 
 const colorScale = d3.scaleQuantize()
     .domain([0, 10000000])  // Adjust based on population range
-    .range(d3.schemePurples[9]);
+    .range(d3.schemeGreys[9]);
 
 // Set up tooltip for displaying information
 const tooltip = d3.select("#tooltip");
@@ -378,7 +378,7 @@ Promise.all([
                 .attr("d", d3.geoPath())
                 .attr("fill", d => {
                     const stateName = d.properties.name;
-                    return selectedState === stateName ? "blue" : colorScale(populationByState[stateName] || 0);
+                    return selectedState === stateName ? "steelblue" : colorScale(populationByState[stateName] || 0);
                 })
                 .attr("stroke", "#333")
                 .on("mouseover", function (event, d) {
@@ -418,7 +418,7 @@ Promise.all([
 
                         // Select the new state
                         selectedState = stateName;
-                        d3.select(this).transition().duration(300).attr("fill", "blue");
+                        d3.select(this).transition().duration(300).attr("fill", "steelblue");
                     }
 
                     // Update the line graph with the selected state's data or clear it if no state is selected
