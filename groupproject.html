@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive US Population Map</title>
+    <title>Interactive US Urban Growth Map</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <style>
@@ -14,6 +14,7 @@
             flex: 1;
             padding: 10px;
             height: 600px;
+            width: 960px
         }
         #graphs-container {
             display: flex;
@@ -24,9 +25,9 @@
             height: 600px;
         }
         .graph {
-            width: calc(1.4 * 33.33%);
-            height: 33.33%;
-            border: 2px solid black; /* Outlining the containers in black */
+            height: calc(100% / 3); /* Divide the height equally among the three graphs */
+            width: 320px;
+            border: 2px solid black;
         }
         .graph svg {
             width: 100%;
@@ -40,17 +41,39 @@
             display: none;
         }
         .dropdown-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Interactive US Population Map</h1>
-
+    <h1 style="text-align: center;">
+        Interactive US Urban Growth Map
+    </h1>
+    
     <!-- Dropdown menu for year selection -->
     <div class="dropdown-container">
+        <label for="datasetSelect">Dataset:</label>
+        <select id="datasetSelect">
+            <option value="population">Population</option>
+            <option value="jobGrowth">Job Growth</option>
+            <option value="medianIncome">Median Income</option>
+        </select>
+    
         <label for="yearSelect">Year:</label>
         <select id="yearSelect">
+            <option value="2019">2010</option>
+            <option value="2020">2011</option>
+            <option value="2021">2012</option>
+            <option value="2019">2013</option>
+            <option value="2020">2014</option>
+            <option value="2021">2015</option>
+            <option value="2022">2016</option>
+            <option value="2023">2017</option>
+            <option value="2024">2018</option>
             <option value="2019">2019</option>
             <option value="2020">2020</option>
             <option value="2021">2021</option>
@@ -78,6 +101,7 @@
     <!-- Tooltip for interaction -->
     <div class="tooltip" id="tooltip"></div>
 
-    <script src="js/script.js"></script>
+    <script src="js/script.js"></script> <!-- Ensure script.js is loaded after D3 -->
+
 </body>
 </html>

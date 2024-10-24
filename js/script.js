@@ -1,24 +1,68 @@
-// Define constants for chart dimensions and margins
+// Define constants for chart dimensions and margins (shared for both charts)
 const CHART_WIDTH = document.querySelector("#line-graph").clientWidth;
 const CHART_HEIGHT = document.querySelector("#line-graph").clientHeight;
 const MARGIN = { left: 60, bottom: 50, top: 20, right: 20 };
 
-// Define constants for chart dimensions and margins
-const BAR_CHART_WIDTH = document.querySelector("#bar-graph").clientWidth;
-const BAR_CHART_HEIGHT = document.querySelector("#bar-graph").clientHeight;
+// Track the selected state
+let selectedState = null;
+// Variable to hold population data by state and year
+let populationByStateAndYear = {};
+
+// Shared scales and color scale
+const xScale = d3.scaleLinear()
+    .domain([2010, 2024])
+    .range([MARGIN.left, CHART_WIDTH - MARGIN.right]);
+
+const yScale = d3.scaleLinear()
+    .domain([0, 10000000])
+    .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
 
 const colorScale = d3.scaleQuantize()
-    .domain([0, 10000000])  // Adjust based on population range
+    .domain([0, 10000000])
     .range(d3.schemeGreys[9]);
 
-// Set up tooltip for displaying information
+// Tooltip setup
 const tooltip = d3.select("#tooltip");
 
-// Track the currently selected state
-let selectedState = null;
+// Dropdown element for dataset selection
+const datasetSelect = d3.select("#datasetSelect");
 
 // Dropdown element for year selection
 const yearSelect = d3.select("#yearSelect");
+
+datasetSelect.on("change", function () {
+    const selectedDataset = this.value;
+    loadDataset(selectedDataset);  // Function to load and update the map based on the selected dataset
+});
+
+// Helper to create scales based on graph dimensions
+function createLinearScale(domain, range) {
+    return d3.scaleLinear().domain(domain).range(range);
+}
+
+// Helper to create band scales for bar charts
+function createBandScale(domain, range) {
+    return d3.scaleBand().domain(domain).range(range).padding(0.1);
+}
+
+// Helper to set up an axis
+function setupAxis(svg, axisType, scale, axisClass, transform) {
+    const axis = axisType === "x" ? d3.axisBottom(scale).ticks(6).tickFormat(d3.format("d")) : d3.axisLeft(scale);
+    svg.select(`.${axisClass}`).remove(); // Remove previous axis
+    svg.append("g")
+        .attr("transform", transform)
+        .attr("class", axisClass)
+        .call(axis);
+}
+
+// Helper to setup a graph's SVG container
+function setupGraphContainer(graphId, width, height) {
+    return d3.select(graphId).append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("preserveAspectRatio", "xMinYMin meet");
+}
 
 // SVG element for the line graph in the first container
 const lineGraphSvg = d3.select("#line-graph").append("svg")
@@ -29,23 +73,26 @@ const lineGraphSvg = d3.select("#line-graph").append("svg")
 
 // SVG element for the bar graph in the second container
 const barGraphSvg = d3.select("#bar-graph").append("svg")
-    .attr("width", BAR_CHART_WIDTH)
-    .attr("height", BAR_CHART_HEIGHT)
-    .attr("viewBox", `0 0 ${BAR_CHART_WIDTH} ${BAR_CHART_HEIGHT}`)  // Make it responsive
+    .attr("width", CHART_WIDTH)
+    .attr("height", CHART_HEIGHT)
+    .attr("viewBox", `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`)  // Make it responsive
     .attr("preserveAspectRatio", "xMinYMin meet");  // Preserve aspect ratio
 
-// Variable to hold population data by state and year
-let populationByStateAndYear = {};
+// Update graphs for the selected state
+function updateGraphs() {
+    if (!selectedState || !populationByStateAndYear[selectedState]) {
+        console.error("No data available for the selected state.");
+        return;
+    }
 
-// Setup initial line graph when the page loads
-setupLineGraph();
+    updateLineGraph();
+    updateBarGraph();
+}
 
-// Setup initial bar graph when the page loads
-setupBarGraph();
-
+// Line graph setup
 function setupLineGraph() {
     // Dynamically set the height and width of the graphs
-    const mapHeight = document.querySelector("#map-container").clientHeight; 
+    const mapHeight = document.querySelector("#map-container").clientHeight;
     const graphHeight = mapHeight / 3; // Each graph should be 1/3 the height of the map
     const graphWidth = graphHeight * 1.6; // Width should be 1.4 times the height
 
@@ -60,11 +107,15 @@ function setupLineGraph() {
         .attr("width", graphWidth)
         .attr("height", graphHeight);
 
-    const svg = d3.select("#line-graph").select("svg");
+    const svg = d3.select("#line-graph").select("svg")
+        .attr("width", CHART_WIDTH)
+        .attr("height", CHART_HEIGHT)
+        .attr("viewBox", `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`)
+        .attr("preserveAspectRatio", "xMinYMin meet");
 
     // X-axis scale and setup
     const xScale = d3.scaleLinear()
-        .domain([2019, 2024])
+        .domain([2010, 2024])
         .range([MARGIN.left, graphWidth - MARGIN.right]);
     const xAxis = d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d"));
 
@@ -74,16 +125,66 @@ function setupLineGraph() {
         .range([graphHeight - MARGIN.bottom, MARGIN.top]);
     const yAxis = d3.axisLeft(yScale);
 
-    // Add x-axis
+    // X-axis
     svg.append("g")
         .attr("transform", `translate(0,${CHART_HEIGHT - MARGIN.bottom})`)
         .attr("class", "x-axis")
-        .call(d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d")));  // Ensure ticks show 1-year intervals
+        .call(d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d")))
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-0.8em")
+        .attr("dy", "0.15em")
+        .attr("transform", "rotate(-90)");
 
-    // Add y-axis
+    // Y-axis
     svg.append("g")
         .attr("transform", `translate(${MARGIN.left},0)`)
         .attr("class", "y-axis")
+        .call(d3.axisLeft(yScale));
+
+    // Add y-axis label
+    svg.append("text")
+        .attr("x", -CHART_HEIGHT / 2)
+        .attr("y", MARGIN.left / 3)
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .text("Population");
+}
+
+// Bar graph setup
+function setupBarGraph() {
+    const svg = d3.select("#bar-graph").select("svg")
+        .attr("width", CHART_WIDTH)
+        .attr("height", CHART_HEIGHT)
+        .attr("viewBox", `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`)
+        .attr("preserveAspectRatio", "xMinYMin meet");
+
+    // X-axis scale
+        const xScale = d3.scaleBand()
+        .domain([2010, 2024])
+        .range([MARGIN.left, CHART_WIDTH - MARGIN.right])
+        .padding(0.1);  // Adjust padding for bars
+
+    // Y-axis scale
+    const yScale = d3.scaleLinear()
+        .domain([0, 10000000])  // Adjust based on maximum population
+        .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
+
+    // X-axis
+    svg.append("g")
+        .attr("transform", `translate(0,${CHART_HEIGHT - MARGIN.bottom})`)
+        .attr("class", "x-axis-bar")
+        .call(d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d")))
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-0.8em")
+        .attr("dy", "0.15em")
+        .attr("transform", "rotate(-90)");
+
+    // Y-axis
+    svg.append("g")
+        .attr("transform", `translate(${MARGIN.left},0)`)
+        .attr("class", "y-axis-bar")
         .call(d3.axisLeft(yScale));
 
     // Add x-axis label
@@ -99,72 +200,89 @@ function setupLineGraph() {
         .attr("y", MARGIN.left / 3)
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
-        .text("Population");
 }
 
-function updateLineGraph() {
-    // Clear only the line and the title, but keep the axes intact
-    lineGraphSvg.selectAll(".line-chart").remove();  // Remove the line chart
-    lineGraphSvg.selectAll("text.state-title").remove();  // Remove the state title
+function setupGraphs() {
+    // Dynamically set the height and width of the graphs
+    const mapHeight = document.querySelector("#map-container").clientHeight;
+    const graphHeight = mapHeight / 3;  // Each graph should be 1/3 the height of the map
+    const graphWidth = graphHeight * 1.6;  // Width should be 1.6 times the height
 
-    if (!selectedState) {
-        setupLineGraph();  // Redraw axes if no state is selected
+    // Apply these dimensions to each graph container
+    document.querySelectorAll(".graph").forEach(graph => {
+        graph.style.height = `${graphHeight}px`;  // Set graph container height
+        graph.style.width = `${graphWidth}px`;    // Set graph container width
+    });
+
+    // Update the SVG sizes to match the graph dimensions
+    d3.selectAll(".graph svg")
+        .attr("width", graphWidth)
+        .attr("height", graphHeight);
+
+    // Now call the specific setup functions for the graphs
+    setupLineGraph();
+    setupBarGraph();
+}
+
+
+// Update line graph based on selected state
+function updateLineGraph() {
+    lineGraphSvg.selectAll("*").remove();
+
+    // Check if selectedState exists and has data
+    if (!selectedState || !populationByStateAndYear[selectedState]) {
+        console.error("No data available for the selected state.");
         return;
     }
 
-    const selectedStateData = Object.values(populationByStateAndYear[selectedState]);
+    const selectedStateData = Object.entries(populationByStateAndYear[selectedState])
+        .map(([year, population]) => ({ year: +year, population }));
 
     // Get the min and max population for the selected state
-    const minPopulation = d3.min(selectedStateData);
-    const maxPopulation = d3.max(selectedStateData);
+    const minPopulation = d3.min(selectedStateData, d => d.population);
+    const maxPopulation = d3.max(selectedStateData, d => d.population);
 
-    // Calculate a margin for the y-axis to make it more readable
     const yMargin = (maxPopulation - minPopulation) * 0.1;
-
-    // Ensure y-axis has a meaningful range even if the population values are the same
     const yMin = Math.max(0, minPopulation - yMargin);
     const yMax = maxPopulation + yMargin;
 
     const xScale = d3.scaleLinear()
-        .domain([2019, 2024])
+        .domain([2010, 2024])
         .range([MARGIN.left, CHART_WIDTH - MARGIN.right]);
 
     const yScale = d3.scaleLinear()
         .domain([yMin, yMax])
         .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
 
-    const xAxis = d3.axisBottom(xScale)
-        .ticks(6)
-        .tickFormat(d3.format("d"));
-
+    const xAxis = d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d"));
     const yAxis = d3.axisLeft(yScale);
 
-    // Draw or update x-axis without transitions
-    lineGraphSvg.select(".x-axis").remove();  // Clear previous x-axis before updating
+    // Clear previous axes
+    lineGraphSvg.select(".x-axis").remove();
+    lineGraphSvg.select(".y-axis").remove();
+
+    // Draw or update x-axis
     lineGraphSvg.append("g")
         .attr("transform", `translate(0,${CHART_HEIGHT - MARGIN.bottom})`)
         .attr("class", "x-axis")
         .call(xAxis);
 
-    // Draw or update y-axis without transitions
-    lineGraphSvg.select(".y-axis").remove();  // Clear previous y-axis before updating
+    // Draw or update y-axis
     lineGraphSvg.append("g")
         .attr("transform", `translate(${MARGIN.left},0)`)
         .attr("class", "y-axis")
         .call(yAxis);
 
-    // Line generator
+    // Line generator for the line chart
     const line = d3.line()
         .x(d => xScale(d.year))
         .y(d => yScale(d.population));
 
-    const data = Object.entries(populationByStateAndYear[selectedState])
-        .map(([year, population]) => ({ year: +year, population }));
-
-    // Add line for the selected state with a transition
+    // Bind data to the path element
     const linePath = lineGraphSvg.selectAll(".line-chart")
-        .data([data]);
+        .data([selectedStateData]);
 
+    // Enter phase: append the path
     linePath.enter()
         .append("path")
         .attr("class", "line-chart")
@@ -172,82 +290,32 @@ function updateLineGraph() {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2)
         .attr("d", line)
-        .attr("stroke-dasharray", function () {
-            const length = this.getTotalLength();
-            return `${length} ${length}`;
-        })
-        .attr("stroke-dashoffset", function () {
-            return this.getTotalLength();
-        })
-        .transition()
-        .duration(1000)
-        .attr("stroke-dashoffset", 0);
+        .call(transitionPath);  // Add transition when the path is drawn
 
-    // Add state label as the title
-    lineGraphSvg.append("text")
-        .attr("x", CHART_WIDTH / 2)
-        .attr("y", MARGIN.top)
-        .attr("class", "state-title")
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .text(selectedState);
-
-    linePath.exit()
-        .transition()
-        .duration(500)
-        .attr("opacity", 0)  // Fade out
-        .remove();  // Remove element after the transition
+    // Exit phase: remove the old path
+    linePath.exit().remove();
 }
 
-function setupBarGraph() {
-    const svg = barGraphSvg;
+// Function to create left-to-right transition for the path
+function transitionPath(path) {
+    path.each(function() {
+        const totalLength = this.getTotalLength();
 
-    // X-axis scale
-    const xScale = d3.scaleBand()
-        .domain([2019, 2020, 2021, 2022, 2023, 2024])
-        .range([MARGIN.left, BAR_CHART_WIDTH - MARGIN.right])
-        .padding(0.1);  // Adjust padding for bars
-
-    // Y-axis scale
-    const yScale = d3.scaleLinear()
-        .domain([0, 10000000])  // Adjust based on maximum population
-        .range([BAR_CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
-
-    // Add x-axis
-    svg.append("g")
-        .attr("transform", `translate(0,${BAR_CHART_HEIGHT - MARGIN.bottom})`)
-        .attr("class", "x-axis-bar")
-        .call(d3.axisBottom(xScale).ticks(6).tickFormat(d3.format("d")));  // Ensure ticks show 1-year intervals
-
-    // Add y-axis
-    svg.append("g")
-        .attr("transform", `translate(${MARGIN.left},0)`)
-        .attr("class", "y-axis-bar")
-        .call(d3.axisLeft(yScale));
-
-    // Add x-axis label
-    svg.append("text")
-        .attr("x", BAR_CHART_WIDTH / 2)
-        .attr("y", BAR_CHART_HEIGHT - 10)
-        .attr("text-anchor", "middle")
-        .text("Year");
-
-    // Add y-axis label
-    svg.append("text")
-        .attr("x", -BAR_CHART_HEIGHT / 2)
-        .attr("y", MARGIN.left / 3)
-        .attr("text-anchor", "middle")
-        .attr("transform", "rotate(-90)")
-        .text("Population");
+        d3.select(this)
+            .attr("stroke-dasharray", totalLength + " " + totalLength)
+            .attr("stroke-dashoffset", totalLength)
+            .transition()
+            .duration(800)  // Duration for the left-to-right transition
+            .attr("stroke-dashoffset", 0);
+    });
 }
 
+
+// Update bar graph based on selected state
 function updateBarGraph() {
-    barGraphSvg.selectAll(".bar-chart").remove();  // Clear existing bars
-    barGraphSvg.selectAll("text.state-title-bar").remove();  // Remove the state title
-
-    if (!selectedState) {
-        setupBarGraph();  // Redraw axes and labels if no state is selected
+    // Check if selectedState exists and has data
+    if (!selectedState || !populationByStateAndYear[selectedState]) {
+        console.error("No data available for the selected state in the bar graph.");
         return;
     }
 
@@ -260,94 +328,121 @@ function updateBarGraph() {
 
     // Calculate a margin for the y-axis to make it more readable
     const yMargin = (maxPopulation - minPopulation) * 0.1;
-
-    // Ensure y-axis has a meaningful range even if the population values are the same
     const yMin = Math.max(0, minPopulation - yMargin);
     const yMax = maxPopulation + yMargin;
 
+    // X-axis scale (years)
     const xScale = d3.scaleBand()
         .domain(selectedStateData.map(d => d.year))
-        .range([MARGIN.left, BAR_CHART_WIDTH - MARGIN.right])
+        .range([MARGIN.left, CHART_WIDTH - MARGIN.right])
         .padding(0.1);
 
+    // Y-axis scale (population)
     const yScale = d3.scaleLinear()
         .domain([yMin, yMax])
-        .range([BAR_CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
+        .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
 
-    const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
-    const yAxis = d3.axisLeft(yScale);
+    // Update or append the X-axis
+    if (barGraphSvg.select(".x-axis-bar").empty()) {
+        // If the X-axis doesn't exist, append it
+        barGraphSvg.append("g")
+            .attr("transform", `translate(0,${CHART_HEIGHT - MARGIN.bottom})`)
+            .attr("class", "x-axis-bar")
+            .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+    } else {
+        // Update the X-axis with new data
+        barGraphSvg.select(".x-axis-bar")
+            .transition()
+            .duration(500)
+            .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+    }
 
-    // Draw or update x-axis
-    barGraphSvg.select(".x-axis-bar").remove();  // Clear previous x-axis before updating
-    barGraphSvg.append("g")
-        .attr("transform", `translate(0,${BAR_CHART_HEIGHT - MARGIN.bottom})`)
-        .attr("class", "x-axis-bar")
-        .call(xAxis);
+    // Update or append the Y-axis
+    if (barGraphSvg.select(".y-axis-bar").empty()) {
+        // If the Y-axis doesn't exist, append it
+        barGraphSvg.append("g")
+            .attr("transform", `translate(${MARGIN.left},0)`)
+            .attr("class", "y-axis-bar")
+            .call(d3.axisLeft(yScale));
+    } else {
+        // Update the Y-axis with new data
+        barGraphSvg.select(".y-axis-bar")
+            .call(d3.axisLeft(yScale));
+    }
 
-    // Draw or update y-axis
-    barGraphSvg.select(".y-axis-bar").remove();  // Clear previous y-axis before updating
-    barGraphSvg.append("g")
-        .attr("transform", `translate(${MARGIN.left},0)`)
-        .attr("class", "y-axis-bar")
-        .call(yAxis);
+    // Bind data to the rectangles (bars)
+    const bars = barGraphSvg.selectAll(".bar")
+        .data(selectedStateData, d => d.year);  // Key by year to track elements during updates
 
-    // Bind data to the bars
-    const bars = barGraphSvg.selectAll("rect.bar-chart")
-        .data(selectedStateData, d => d.year);
-
-    // Enter new bars
+    // Enter phase: append new bars
     bars.enter()
         .append("rect")
-        .attr("class", "bar-chart")
+        .attr("class", "bar")
         .attr("x", d => xScale(d.year))
-        .attr("y", d => yScale(yMin))  // Start at yMin, not the container bottom
+        .attr("y", CHART_HEIGHT - MARGIN.bottom)  // Start bars at the bottom for the transition
         .attr("width", xScale.bandwidth())
-        .attr("height", 0)  // Start with height 0
+        .attr("height", 0)  // Initial height for the transition
+        .attr("opacity", 0)
         .attr("fill", "steelblue")
-        .transition()
-        .duration(800)  // Duration for the smooth transition
-        .attr("y", d => yScale(d.population))  // Move to final y position
-        .attr("height", d => BAR_CHART_HEIGHT - MARGIN.bottom - yScale(d.population));  // Grow to the final height
-
-    // Update existing bars
-    bars.transition()
+        .merge(bars)  // Merge new and updated bars
+        .transition()  // Transition for bars entering or updating
         .duration(800)
         .attr("x", d => xScale(d.year))
         .attr("y", d => yScale(d.population))
         .attr("width", xScale.bandwidth())
-        .attr("height", d => BAR_CHART_HEIGHT - MARGIN.bottom - yScale(d.population));
+        .attr("height", d => CHART_HEIGHT - MARGIN.bottom - yScale(d.population))
+        .attr("opacity", 1);
 
-    // Add state label as the title
-    barGraphSvg.append("text")
-        .attr("x", BAR_CHART_WIDTH / 2)
-        .attr("y", MARGIN.top)
-        .attr("class", "state-title-bar")
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .text(selectedState);
+    // Exit phase: remove old bars (if necessary)
+    bars.exit()
+        .transition()
+        .duration(500)
+        .attr("opacity", 0)
+        .remove();
 }
 
-// Add logic to call both updateLineGraph and updateBarGraph when a state is selected
-function updateGraphs() {
-    updateLineGraph();
-    updateBarGraph();
-}
+function loadDataset(selectedDataset) {
+    let datasetUrl;
+    
+    switch (selectedDataset) {
+        case "population":
+            datasetUrl = "data/PopulationDataClean.csv";
+            break;
+        case "jobGrowth":
+            datasetUrl = "data/JobGrowth2012_2024.csv";
+            break;
+        case "medianIncome":
+            datasetUrl = "data/MedianIncomeDataClean.csv";
+            break;
+        default:
+            console.error("Unknown dataset selected.");
+            return;
+    }
 
-// Function to create left-to-right transition for the path
-function transitionPath(path) {
-    path.each(function() {
-        const totalLength = this.getTotalLength();
+    d3.csv(datasetUrl).then(function(data) {
+        populationByStateAndYear = {};
+        data.forEach(d => {
+            const state = d.state;
+            const year = +d.year;
+            const value = +d.value; // Use the right field (population, job growth, or income)
 
-        d3.select(this)
-            .attr("stroke-dasharray", totalLength + " " + totalLength)  // Create the dashed path with full length
-            .attr("stroke-dashoffset", totalLength)  // Offset the dash to hide the line
-            .transition()  // Add transition to reveal the line
-            .duration(800)  // Duration for the left-to-right transition
-            .attr("stroke-dashoffset", 0);  // Animate the dash offset to reveal the line
+            if (!populationByStateAndYear[state]) {
+                populationByStateAndYear[state] = {};
+            }
+            populationByStateAndYear[state][year] = value;
+        });
+
+        updateGraphs();
+    }).catch(function(error) {
+        console.error("Error loading dataset:", error);
     });
 }
 
+// Ensure loadDataset is defined before setting up the event listener
+datasetSelect.on("change", function () {
+    const selectedDataset = this.value;
+    loadDataset(selectedDataset);  // Now the function should be recognized
+});
 
 // Map and population data logic
 Promise.all([
@@ -438,7 +533,7 @@ Promise.all([
         }
 
         // Initial map load with the default year
-        updateMap('2019');
+        updateMap('2010');
 
         // Event listener for year dropdown
         yearSelect.on("change", function () {

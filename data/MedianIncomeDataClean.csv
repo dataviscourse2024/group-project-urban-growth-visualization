@@ -1,4 +1,4 @@
-State,Year,Median Income
+﻿State,Year,Median Income
 United States,2018,"63,179"
 Alabama,2018,"49,936"
 Alaska,2018,"68,734"
@@ -1923,3 +1923,309 @@ Washington,1984,"25,017"
 West Virginia,1984,"16,843"
 Wisconsin,1984,"20,743"
 Wyoming,1984,"23,816"
+Alabama,2019,66430
+Alaska,2019,92670
+Arizona,2019,83540
+Arkansas,2019,64470
+California,2019,92330
+Colorado,2019,85700
+Connecticut,2019,103200
+Delaware,2019,87700
+District of Columbia,2019,110100
+Florida,2019,69000
+Georgia,2019,66940
+Hawaii,2019,104000
+Idaho,2019,78000
+Illinois,2019,87950
+Indiana,2019,78840
+Iowa,2019,78080
+Kansas,2019,86470
+Kentucky,2019,65800
+Louisiana,2019,61120
+Maine,2019,78660
+Maryland,2019,113000
+Massachusetts,2019,103700
+Michigan,2019,75790
+Minnesota,2019,96250
+Mississippi,2019,52940
+Missouri,2019,71630
+Montana,2019,71150
+Nebraska,2019,86370
+Nevada,2019,83820
+New Hampshire,2019,102700
+New Jersey,2019,103700
+New Mexico,2019,62780
+New York,2019,84940
+North Carolina,2019,72290
+North Dakota,2019,82780
+Ohio,2019,76440
+Oklahoma,2019,70210
+Oregon,2019,87960
+Pennsylvania,2019,83430
+Rhode Island,2019,82920
+South Carolina,2019,73320
+South Dakota,2019,75950
+Tennessee,2019,66940
+Texas,2019,79720
+Utah,2019,99910
+Vermont,2019,87830
+Virginia,2019,96120
+Washington,2019,97470
+West Virginia,2019,63480
+Wisconsin,2019,79620
+Wyoming,2019,76990
+Alabama,2020,63980
+Alaska,2020,87440
+Arizona,2020,78480
+Arkansas,2020,59400
+California,2020,90840
+Colorado,2020,98010
+Connecticut,2020,92930
+Delaware,2020,81920
+District of Columbia,2020,103200
+Florida,2020,67570
+Georgia,2020,69330
+Hawaii,2020,94560
+Idaho,2020,78060
+Illinois,2020,86960
+Indiana,2020,78150
+Iowa,2020,80510
+Kansas,2020,85500
+Kentucky,2020,66400
+Louisiana,2020,59880
+Maine,2020,74510
+Maryland,2020,110900
+Massachusetts,2020,102700
+Michigan,2020,75330
+Minnesota,2020,92130
+Mississippi,2020,52800
+Missouri,2020,72740
+Montana,2020,66380
+Nebraska,2020,84520
+Nevada,2020,71550
+New Hampshire,2020,104000
+New Jersey,2020,100100
+New Mexico,2020,59550
+New York,2020,80320
+North Carolina,2020,70700
+North Dakota,2020,75010
+Ohio,2020,70640
+Oklahoma,2020,61380
+Oregon,2020,89910
+Pennsylvania,2020,82810
+Rhode Island,2020,93790
+South Carolina,2020,70590
+South Dakota,2020,82110
+Tennessee,2020,64310
+Texas,2020,80020
+Utah,2020,98260
+Vermont,2020,78680
+Virginia,2020,96180
+Washington,2020,95180
+West Virginia,2020,60800
+Wisconsin,2020,78860
+Wyoming,2020,76570
+Alabama,2021,63750
+Alaska,2021,90850
+Arizona,2021,79310
+Arkansas,2021,56870
+California,2021,91350
+Colorado,2021,95130
+Connecticut,2021,90660
+Delaware,2021,76920
+District of Columbia,2021,101500
+Florida,2021,66890
+Georgia,2021,68860
+Hawaii,2021,92050
+Idaho,2021,86130
+Illinois,2021,88750
+Indiana,2021,78600
+Iowa,2021,81110
+Kansas,2021,85080
+Kentucky,2021,62290
+Louisiana,2021,64060
+Maine,2021,79660
+Maryland,2021,109000
+Massachusetts,2021,96940
+Michigan,2021,72210
+Minnesota,2021,90080
+Mississippi,2021,52230
+Missouri,2021,71210
+Montana,2021,72790
+Nebraska,2021,87470
+Nevada,2021,72050
+New Hampshire,2021,99490
+New Jersey,2021,99170
+New Mexico,2021,59870
+New York,2021,81660
+North Carolina,2021,70430
+North Dakota,2021,77140
+Ohio,2021,70200
+Oklahoma,2021,67300
+Oregon,2021,91660
+Pennsylvania,2021,81330
+Rhode Island,2021,83970
+South Carolina,2021,70040
+South Dakota,2021,82750
+Tennessee,2021,69610
+Texas,2021,75480
+Utah,2021,98150
+Vermont,2021,85190
+Virginia,2021,89890
+Washington,2021,98150
+West Virginia,2021,52450
+Wisconsin,2021,78320
+Wyoming,2021,79570
+Alabama,2022,62290
+Alaska,2022,93310
+Arizona,2022,76370
+Arkansas,2022,56120
+California,2022,88690
+Colorado,2022,93510
+Connecticut,2022,94340
+Delaware,2022,83960
+District of Columbia,2022,105700
+Florida,2022,67960
+Georgia,2022,70420
+Hawaii,2022,94620
+Idaho,2022,75460
+Illinois,2022,81120
+Indiana,2022,72810
+Iowa,2022,79350
+Kansas,2022,75950
+Kentucky,2022,58090
+Louisiana,2022,60640
+Maine,2022,78150
+Maryland,2022,112500
+Massachusetts,2022,97260
+Michigan,2022,71730
+Minnesota,2022,93980
+Mississippi,2022,50540
+Missouri,2022,74360
+Montana,2022,75870
+Nebraska,2022,81480
+Nevada,2022,75200
+New Hampshire,2022,88350
+New Jersey,2022,96010
+New Mexico,2022,58660
+New York,2022,78920
+North Carolina,2022,67660
+North Dakota,2022,81840
+Ohio,2022,70200
+Oklahoma,2022,65960
+Oregon,2022,90230
+Pennsylvania,2022,75070
+Rhode Island,2022,83860
+South Carolina,2022,64220
+South Dakota,2022,69850
+Tennessee,2022,67980
+Texas,2022,77600
+Utah,2022,99610
+Vermont,2022,75060
+Virginia,2022,88550
+Washington,2022,92980
+West Virginia,2022,54540
+Wisconsin,2022,76240
+Wyoming,2022,76000
+Alabama,2023,60660
+Alaska,2023,98190
+Arizona,2023,82660
+Arkansas,2023,63250
+California,2023,89870
+Colorado,2023,96640
+Connecticut,2023,92240
+Delaware,2023,86340
+District of Columbia,2023,111000
+Florida,2023,72200
+Georgia,2023,72420
+Hawaii,2023,97360
+Idaho,2023,73910
+Illinois,2023,87820
+Indiana,2023,76910
+Iowa,2023,80860
+Kansas,2023,84830
+Kentucky,2023,61980
+Louisiana,2023,57650
+Maine,2023,75740
+Maryland,2023,102000
+Massachusetts,2023,106500
+Michigan,2023,76960
+Minnesota,2023,90340
+Mississippi,2023,55060
+Missouri,2023,78290
+Montana,2023,79220
+Nebraska,2023,89190
+Nevada,2023,81310
+New Hampshire,2023,98780
+New Jersey,2023,91590
+New Mexico,2023,60980
+New York,2023,81600
+North Carolina,2023,68610
+North Dakota,2023,76960
+Ohio,2023,73770
+Oklahoma,2023,67330
+Oregon,2023,88740
+Pennsylvania,2023,79820
+Rhode Island,2023,81860
+South Carolina,2023,69100
+South Dakota,2023,81740
+Tennessee,2023,72700
+Texas,2023,79060
+Utah,2023,101200
+Vermont,2023,85190
+Virginia,2023,96490
+Washington,2023,93440
+West Virginia,2023,60410
+Wisconsin,2023,79690
+Wyoming,2023,77200
+Maryland,2024,90203
+District of Columbia,2024,90088
+Massachusetts,2024,89645
+New Jersey,2024,89296
+New Hampshire,2024,88465
+California,2024,84907
+Hawaii,2024,84857
+Washington,2024,84247
+Connecticut,2024,83771
+Colorado,2024,82254
+Virginia,2024,80963
+Utah,2024,79449
+Alaska,2024,77845
+Minnesota,2024,77720
+New York,2024,74314
+Rhode Island,2024,74008
+Vermont,2024,72431
+Illinois,2024,72205
+Oregon,2024,71562
+Delaware,2024,71091
+Arizona,2024,69056
+Pennsylvania,2024,68957
+Wisconsin,2024,67125
+Texas,2024,66963
+Nebraska,2024,66817
+Georgia,2024,66559
+North Dakota,2024,66519
+Idaho,2024,66474
+Nevada,2024,66274
+South Dakota,2024,66143
+Iowa,2024,65600
+Wyoming,2024,65204
+Maine,2024,64767
+Kansas,2024,64124
+Michigan,2024,63498
+Montana,2024,63249
+Florida,2024,63062
+Indiana,2024,62743
+Ohio,2024,62262
+North Carolina,2024,61972
+Missouri,2024,61847
+Tennessee,2024,59695
+South Carolina,2024,59318
+Oklahoma,2024,55826
+Kentucky,2024,55573
+New Mexico,2024,53992
+Alabama,2024,53913
+Arkansas,2024,52528
+Louisiana,2024,52087
+West Virginia,2024,51248
+Mississippi,2024,48716
