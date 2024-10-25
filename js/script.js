@@ -17,6 +17,7 @@ const yScale = d3.scaleLinear()
     .domain([0, 10000000])
     .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
 
+// Generate color scheme
 const colorScale = d3.scaleQuantize()
     .domain([0, 10000000])
     .range(d3.schemeGreys[9]);
@@ -293,7 +294,11 @@ function updateLineGraph() {
         .call(transitionPath);  // Add transition when the path is drawn
 
     // Exit phase: remove the old path
-    linePath.exit().remove();
+    linePath.exit()
+        .transition()
+        .duration(500)
+        .attr("opacity", 0)
+        .remove();
 }
 
 // Function to create left-to-right transition for the path
@@ -401,6 +406,7 @@ function updateBarGraph() {
         .remove();
 }
 
+// Function used to change between datasets
 function loadDataset(selectedDataset) {
     let datasetUrl;
     
@@ -441,7 +447,7 @@ function loadDataset(selectedDataset) {
 // Ensure loadDataset is defined before setting up the event listener
 datasetSelect.on("change", function () {
     const selectedDataset = this.value;
-    loadDataset(selectedDataset);  // Now the function should be recognized
+    loadDataset(selectedDataset);
 });
 
 // Map and population data logic
@@ -467,7 +473,6 @@ Promise.all([
 
         const states = topojson.feature(usMapData, usMapData.objects.states).features;
 
-        // Function to update the map based on the selected year
         // Function to update the map based on the selected year
         function updateMap(year) {
             const populationByState = {};
