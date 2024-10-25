@@ -7,32 +7,52 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <style>
+        /* Make the HTML and body take the full page */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Set the container to take up full height and width */
         #container {
             display: flex;
+            height: calc(100% - 100px); /* Adjust for title and dropdown height */
+            width: 100%;
         }
+
         #map-container {
-            flex: 1;
+            flex: 60%;
             padding: 10px;
-            height: 600px;
-            width: 960px
+            height: 100%;
         }
+
         #graphs-container {
             display: flex;
             flex-direction: column;
-            flex: 1;
+            flex: 40%;
             padding: 10px;
             justify-content: space-between;
-            height: 600px;
+            background-color: #f0f0f0;
+            border-left: 5px solid #333;
+            height: 100%;
         }
+
         .graph {
-            height: calc(100% / 3); /* Divide the height equally among the three graphs */
-            width: 320px;
+            flex: 1;
+            margin-bottom: 10px;
             border: 2px solid black;
+            width: 500px;
+            height: 300px;
+
         }
+
         .graph svg {
             width: 100%;
             height: 100%;
+            background-color: #f0f0f0;
         }
+
         .tooltip {
             position: absolute;
             background-color: white;
@@ -40,6 +60,7 @@
             padding: 5px;
             display: none;
         }
+
         .dropdown-container {
             display: flex;
             justify-content: center;
@@ -47,51 +68,69 @@
             gap: 10px;
             margin-bottom: 20px;
         }
+
+        /* New style for titles */
+        h1 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Ensure header and dropdown section does not interfere with full-page map and graph layout */
+        #header {
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">
-        Interactive US Urban Growth Map
-    </h1>
-    
-    <!-- Dropdown menu for year selection -->
-    <div class="dropdown-container">
-        <label for="datasetSelect">Dataset:</label>
-        <select id="datasetSelect">
-            <option value="population">Population</option>
-            <option value="jobGrowth">Job Growth</option>
-            <option value="medianIncome">Median Income</option>
-        </select>
-    
-        <label for="yearSelect">Year:</label>
-        <select id="yearSelect">
-            <option value="2019">2010</option>
-            <option value="2020">2011</option>
-            <option value="2021">2012</option>
-            <option value="2019">2013</option>
-            <option value="2020">2014</option>
-            <option value="2021">2015</option>
-            <option value="2022">2016</option>
-            <option value="2023">2017</option>
-            <option value="2024">2018</option>
-            <option value="2019">2019</option>
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-        </select>
-    </div>
+
 
     <!-- Container for the map and the graphs -->
     <div id="container">
-        <!-- Embed the provided SVG -->
+
         <div id="map-container">
+            <!-- Title and dropdown for the map and dataset -->
+            <h1>Interactive US Urban Growth Map</h1>
+            <div class="dropdown-container">
+                <label for="datasetSelect">Dataset:</label>
+                <select id="datasetSelect">
+                    <option value="population">Population</option>
+                    <option value="jobGrowth">Job Growth</option>
+                    <option value="medianIncome">Median Income</option>
+                    <option value = "housing"></option>
+                </select>
+        
+                <label for="yearSelect">Year:</label>
+                <select id="yearSelect">
+                    <option value="2010">2010</option>
+                    <option value="2011">2011</option>
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+            <!-- Embed the provided SVG for the map -->
             <object type="image/svg+xml" id="us-map-svg" data="chart.svg"></object>
         </div>
 
         <!-- Container for the graphs -->
         <div id="graphs-container">
+            <h2>State-Level Data Graphs</h2> <!-- Separate title for the graphs section -->
             <div id="line-graph" class="graph"></div> <!-- First graph container for the line graph -->
             <div id="bar-graph" class="graph"></div> <!-- Second graph container for the bar graph -->
             <div id="graph-3" class="graph"></div> <!-- Third graph container (future use) -->
@@ -102,6 +141,5 @@
     <div class="tooltip" id="tooltip"></div>
 
     <script src="js/script.js"></script> <!-- Ensure script.js is loaded after D3 -->
-
 </body>
 </html>

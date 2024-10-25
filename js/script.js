@@ -6,8 +6,7 @@ const MARGIN = { left: 60, bottom: 50, top: 20, right: 20 };
 // Track the selected state
 let selectedState = null;
 // Variable to hold population data by state and year
-let populationByStateAndYear = {};
-
+let data = {};
 // Shared scales and color scale
 const xScale = d3.scaleLinear()
     .domain([2010, 2024])
@@ -18,7 +17,7 @@ const yScale = d3.scaleLinear()
     .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
 
 // Generate color scheme
-const colorScale = d3.scaleLinear()
+let colorScale = d3.scaleLinear()
     .domain([0, 10000000])  // Population range
     .range([0, .8]);
 
@@ -81,7 +80,7 @@ const barGraphSvg = d3.select("#bar-graph").append("svg")
 
 // Update graphs for the selected state
 function updateGraphs() {
-    if (!selectedState || !populationByStateAndYear[selectedState]) {
+    if (!selectedState || !data[selectedState]) {
         console.error("No data available for the selected state.");
         return;
     }
@@ -231,12 +230,12 @@ function updateLineGraph() {
     lineGraphSvg.selectAll("*").remove();
 
     // Check if selectedState exists and has data
-    if (!selectedState || !populationByStateAndYear[selectedState]) {
+    if (!selectedState || !data[selectedState]) {
         console.error("No data available for the selected state.");
         return;
     }
 
-    const selectedStateData = Object.entries(populationByStateAndYear[selectedState])
+    const selectedStateData = Object.entries(data[selectedState])
         .map(([year, population]) => ({ year: +year, population }));
 
     // Get the min and max population for the selected state
@@ -319,12 +318,12 @@ function transitionPath(path) {
 // Update bar graph based on selected state
 function updateBarGraph() {
     // Check if selectedState exists and has data
-    if (!selectedState || !populationByStateAndYear[selectedState]) {
+    if (!selectedState || !data[selectedState]) {
         console.error("No data available for the selected state in the bar graph.");
         return;
     }
 
-    const selectedStateData = Object.entries(populationByStateAndYear[selectedState])
+    const selectedStateData = Object.entries(data[selectedState])
         .map(([year, population]) => ({ year: +year, population }));
 
     // Get the min and max population for the selected state
@@ -406,36 +405,38 @@ function updateBarGraph() {
         .remove();
 }
 
+let dataurl= "data/MedianIncomeDataClean.csv";
+
 // Function used to change between datasets
 function loadDataset(selectedDataset) {
-    let datasetUrl;
     
     switch (selectedDataset) {
         case "population":
-            datasetUrl = "data/PopulationDataClean.csv";
+            dataurl = "data/PopulationDataClean.csv";
             break;
         case "jobGrowth":
-            datasetUrl = "data/JobGrowth2012_2024.csv";
+            dataurl = "data/JobGrowth2012_2024.csv";
+            
             break;
         case "medianIncome":
-            datasetUrl = "data/MedianIncomeDataClean.csv";
+            dataurl = "data/MedianIncomeDataClean.csv";
             break;
         default:
             console.error("Unknown dataset selected.");
             return;
     }
 
-    d3.csv(datasetUrl).then(function(data) {
-        populationByStateAndYear = {};
+    d3.csv(dataurl).then(function(data) {
+        data = {};
         data.forEach(d => {
             const state = d.state;
             const year = +d.year;
             const value = +d.value; // Use the right field (population, job growth, or income)
 
-            if (!populationByStateAndYear[state]) {
-                populationByStateAndYear[state] = {};
+            if (!data[state]) {
+                data[state] = {};
             }
-            populationByStateAndYear[state][year] = value;
+            data[state][year] = value;
         });
 
         updateGraphs();
@@ -444,26 +445,22 @@ function loadDataset(selectedDataset) {
     });
 }
 
-// Ensure loadDataset is defined before setting up the event listener
-datasetSelect.on("change", function () {
-    const selectedDataset = this.value;
-    loadDataset(selectedDataset);
-});
+
 
 // Map and population data logic
 Promise.all([
     d3.json('data/us.json'),  // Load the US map in TopoJSON format
-    d3.csv('data/PopulationDataClean.csv')  // Load the population data
-]).then(([usMapData, populationData]) => {
+    d3.csv(dataurl)  // Load the data
+]).then(([usMapData, valueData]) => {
     const svgMap = d3.select("#us-map-svg");
 
-    // Prepare population data by year and state
-    populationByStateAndYear = {};
-    populationData.forEach(d => {
-        if (!populationByStateAndYear[d.State]) {
-            populationByStateAndYear[d.State] = {};
+    // Prepare value data by year and state
+    data = {};
+    valueData.forEach(d => {
+        if (!data[d.State]) {
+            data[d.State] = {};
         }
-        populationByStateAndYear[d.State][d.Year] = +d.Population;
+        data[d.State][d.Year] = +d.Value;
     });
 
     // Initial SVG load handling
@@ -475,30 +472,30 @@ Promise.all([
 
         // Function to update the map based on the selected year
         function updateMap(year) {
-            const populationByState = {};
-            populationData.forEach(d => {
+            const valueByState = {};
+            valueData.forEach(d => {
                 if (d.Year === year) {
-                    populationByState[d.State] = +d.Population;
+                    valueByState[d.State] = +d.Value;
                 }
             });
 
-            // Update state colors based on selection or population
+            // Update state colors based on selection or value
             svgRoot.selectAll("path")
                 .data(states)
                 .join("path")
                 .attr("d", d3.geoPath())
                 .attr("fill", d => {
                     const stateName = d.properties.name;
-                    const population = populationByState[stateName] || 0;
-                    const colorValue = colorScale(population);
+                    const value = valueByState[stateName] || 0;
+                    const colorValue = colorScale(value);
                     return d3.interpolateGreys(colorValue);  // Apply gradient
                 })
                 .attr("stroke", "#333")
                 .on("mouseover", function (event, d) {
                     const stateName = d.properties.name;
-                    const population = populationByState[stateName] || "Unknown";
+                    const value = valueByState[stateName] || "Unknown";
                     tooltip.style("display", "block")
-                        .html(`<strong>${stateName}</strong><br>Population: ${population}`)
+                        .html(`<strong>${stateName}</strong><br>Population: ${value}`)
                         .style("left", (event.pageX + 10) + "px")
                         .style("top", (event.pageY - 30) + "px");
 
@@ -510,7 +507,7 @@ Promise.all([
                     tooltip.style("display", "none");
                     const stateName = d.properties.name;
                     if (selectedState !== stateName) {
-                        d3.select(this).transition().duration(300).attr("fill", d3.interpolateGreys(colorScale(populationByState[stateName] || 0)));  // Return to gradient
+                        d3.select(this).transition().duration(300).attr("fill", d3.interpolateGreys(colorScale(valueByState[stateName] || 0)));  // Return to gradient
                     }
                 })
                 .on("click", function (event, d) {
@@ -518,13 +515,13 @@ Promise.all([
 
                     if (selectedState === stateName) {
                         selectedState = null;
-                        d3.select(this).transition().duration(300).attr("fill", d3.interpolateGreys(colorScale(populationByState[stateName] || 0)));
+                        d3.select(this).transition().duration(300).attr("fill", d3.interpolateGreys(colorScale(valueByState[stateName] || 0)));
                     } else {
                         if (selectedState) {
                             svgRoot.selectAll("path")
                                 .filter(d => d.properties.name === selectedState)
                                 .transition().duration(300)
-                                .attr("fill", d3.interpolateGreys(colorScale(populationByState[selectedState] || 0)));
+                                .attr("fill", d3.interpolateGreys(colorScale(valueByState[selectedState] || 0)));
                         }
                         selectedState = stateName;
                         d3.select(this).transition().duration(300).attr("fill", "steelblue");
@@ -537,6 +534,11 @@ Promise.all([
         // Initial map load with the default year
         updateMap('2010');
 
+        // Ensure loadDataset is defined before setting up the event listener
+        datasetSelect.on("change", function () {
+            const selectedDataset = this.value;
+            loadDataset(selectedDataset);
+        });
         // Event listener for year dropdown
         yearSelect.on("change", function () {
             const selectedYear = this.value;
