@@ -405,8 +405,8 @@ function updateBarGraph() {
         .remove();
 }
 
-let dataurl= "data/MedianIncomeDataClean.csv";
-
+let dataurl= "data/PopulationDataClean.csv"
+let selectedYear = '2010';
 // Function used to change between datasets
 function loadDataset(selectedDataset) {
     
@@ -421,17 +421,19 @@ function loadDataset(selectedDataset) {
         case "medianIncome":
             dataurl = "data/MedianIncomeDataClean.csv";
             break;
+        case "housing":
+            dataurl = "data/HousingYearlyDataClean.csv"
         default:
             console.error("Unknown dataset selected.");
             return;
     }
 
-    d3.csv(dataurl).then(function(data) {
-        data = {};
-        data.forEach(d => {
+    d3.csv(dataurl).then(function(loadedData) {  // Use `loadedData` to prevent overwriting `data`
+        data = {}; // Reset data object
+        loadedData.forEach(d => {
             const state = d.state;
             const year = +d.year;
-            const value = +d.value; // Use the right field (population, job growth, or income)
+            const value = +d.value;
 
             if (!data[state]) {
                 data[state] = {};
@@ -439,12 +441,18 @@ function loadDataset(selectedDataset) {
             data[state][year] = value;
         });
 
+        updateMap(selectedYear);
         updateGraphs();
     }).catch(function(error) {
         console.error("Error loading dataset:", error);
     });
+
+
 }
 
+
+
+function loadMap(){
 
 
 // Map and population data logic
@@ -538,11 +546,16 @@ Promise.all([
         datasetSelect.on("change", function () {
             const selectedDataset = this.value;
             loadDataset(selectedDataset);
+            loadMap();
+            updateMap(selectedYear);
         });
         // Event listener for year dropdown
         yearSelect.on("change", function () {
-            const selectedYear = this.value;
+            selectedYear = this.value;
             updateMap(selectedYear);
         });
     });
 }).catch(error => console.error("Error loading data:", error));
+}
+
+loadMap()
