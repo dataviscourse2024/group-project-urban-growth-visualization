@@ -18,9 +18,9 @@ const yScale = d3.scaleLinear()
     .range([CHART_HEIGHT - MARGIN.bottom, MARGIN.top]);
 
 // Generate color scheme
-const colorScale = d3.scaleQuantize()
-    .domain([0, 10000000])
-    .range(d3.schemeGreys[9]);
+const colorScale = d3.scaleLinear()
+    .domain([0, 10000000])  // Population range
+    .range([0, .8]);
 
 // Tooltip setup
 const tooltip = d3.select("#tooltip");
@@ -489,7 +489,9 @@ Promise.all([
                 .attr("d", d3.geoPath())
                 .attr("fill", d => {
                     const stateName = d.properties.name;
-                    return selectedState === stateName ? "steelblue" : colorScale(populationByState[stateName] || 0);
+                    const population = populationByState[stateName] || 0;
+                    const colorValue = colorScale(population);
+                    return d3.interpolateGreys(colorValue);  // Apply gradient
                 })
                 .attr("stroke", "#333")
                 .on("mouseover", function (event, d) {
@@ -501,40 +503,35 @@ Promise.all([
                         .style("top", (event.pageY - 30) + "px");
 
                     if (selectedState !== stateName) {
-                        d3.select(this).transition().duration(300).attr("fill", "steelblue");  // Transition to orange on hover
+                        d3.select(this).transition().duration(300).attr("fill", "steelblue");  // Transition to steelblue on hover
                     }
                 })
                 .on("mouseout", function (event, d) {
                     tooltip.style("display", "none");
                     const stateName = d.properties.name;
                     if (selectedState !== stateName) {
-                        d3.select(this).transition().duration(300).attr("fill", colorScale(populationByState[stateName] || 0));  // Transition back to original color
+                        d3.select(this).transition().duration(300).attr("fill", d3.interpolateGreys(colorScale(populationByState[stateName] || 0)));  // Return to gradient
                     }
                 })
                 .on("click", function (event, d) {
                     const stateName = d.properties.name;
 
                     if (selectedState === stateName) {
-                        // Deselect the state
                         selectedState = null;
-                        d3.select(this).transition().duration(300).attr("fill", colorScale(populationByState[stateName] || 0));  // Smoothly transition back to the original color
+                        d3.select(this).transition().duration(300).attr("fill", d3.interpolateGreys(colorScale(populationByState[stateName] || 0)));
                     } else {
-                        // Deselect the previously selected state and revert its color
                         if (selectedState) {
                             svgRoot.selectAll("path")
                                 .filter(d => d.properties.name === selectedState)
-                                .transition().duration(300)  // Smooth transition
-                                .attr("fill", d => colorScale(populationByState[selectedState] || 0));
+                                .transition().duration(300)
+                                .attr("fill", d3.interpolateGreys(colorScale(populationByState[selectedState] || 0)));
                         }
-
-                        // Select the new state
                         selectedState = stateName;
                         d3.select(this).transition().duration(300).attr("fill", "steelblue");
                     }
-
-                    // Update the line graph with the selected state's data or clear it if no state is selected
                     updateGraphs();
                 });
+
         }
 
         // Initial map load with the default year
