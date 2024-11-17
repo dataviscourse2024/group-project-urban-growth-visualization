@@ -146,7 +146,13 @@ function loadMap() {
                         .style("display", "block")
                         .html(`<strong>${stateName}</strong><br>Value: ${value}`)
                         .style("left", `${event.pageX + 10}px`)
-                        .style("top", `${event.pageY - 30}px`);
+                        .style("top", `${event.pageY - 65}px`);
+
+                        d3.select(this).on("mousemove", function (event) {
+                            tooltip
+                                .style("left", `${event.pageX + 10}px`)  // Update tooltip position on mouse move
+                                .style("top", `${event.pageY - 65}px`);  // Update tooltip position on mouse move
+                        });
                 })
                 .on("mouseout", function (event, d) {
                     const stateElement = d3.select(this);
