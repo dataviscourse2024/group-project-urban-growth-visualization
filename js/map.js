@@ -80,9 +80,6 @@ function loadMap() {
   
           // Define `colorScale` dynamically based on the data for the year
           colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, maxValue]);
-  
-          // Validate `colorScale`
-          console.log("Color scale initialized:", colorScale);
         }
   
         // Set up zoom behavior
@@ -108,64 +105,72 @@ function loadMap() {
   
         // Draw the states
         let states = g.append("g")
-          .attr("fill", "#ccc")
-          .attr("cursor", "pointer")
-          .selectAll("path")
-          .data(topojson.feature(us, us.objects.states).features)
-          .join("path")
-          .on("mouseover", function (event, d) {
-            const stateName = d.properties.name;
-            const year = d3.select("#yearSelect").property("value"); // Fetch dynamically
-            const value = valueByState[stateName]?.[year] || "Unknown";
-  
-            // Show tooltip
-            tooltip
-              .style("display", "block")
-              .html(`<strong>${stateName}</strong><br>Value: ${value}`)
-              .style("left", (event.pageX + 10) + "px")
-              .style("top", (event.pageY - 30) + "px");
-  
-            // Highlight the state
-            d3.select(this).transition().duration(300).attr("fill", "steelblue");
-          })
-          .on("mouseout", function (event, d) {
-            const stateName = d.properties.name;
-            const year = d3.select("#yearSelect").property("value"); // Fetch dynamically
-  
-            // Hide tooltip
-            tooltip.style("display", "none");
-  
-            // Reset state color
-            d3.select(this).transition().duration(300)
-              .attr("fill", d => {
-                const value = valueByState[d.properties.name]?.[year] || 0;
+            .attr("fill", "#ccc")
+            .attr("cursor", "pointer")
+            .selectAll("path")
+            .data(topojson.feature(us, us.objects.states).features)
+            .join("path")
+            .on("mouseover", function (event, d) {
+                const stateElement = d3.select(this);
+                const isSelected = stateElement.attr("data-selected") === "true"; // Check if the state is selected
+            
+                if (!isSelected) {
+                    // Only apply hover effect if the state is not selected
+                    stateElement.interrupt().transition().duration(300).style("fill", "steelblue");
+                }
+            
+                const stateName = d.properties.name;
+                const year = d3.select("#yearSelect").property("value");
+                const value = valueByState[stateName]?.[year] || "Unknown";
+            
+                tooltip
+                    .style("display", "block")
+                    .html(`<strong>${stateName}</strong><br>Value: ${value}`)
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY - 30}px`);
+            })
+            
+            .on("mouseout", function (event, d) {
+                const stateElement = d3.select(this);
+                const isSelected = stateElement.attr("data-selected") === "true"; // Check if the state is selected
+            
+                if (!isSelected) {
+                    // Reset color only if the state is not selected
+                    const stateName = d.properties.name;
+                    const year = d3.select("#yearSelect").property("value");
+                    const value = valueByState[stateName]?.[year] || 0;
+            
+                    stateElement.interrupt().transition().duration(300).style("fill", () => colorScale(value));
+                }
+            
+                tooltip.style("display", "none");
+            })
+            
+                      
+            .on("click", clicked)
+            .attr("d", path)
+            .attr("fill", d => {
+                const stateName = d.properties.name;
+                const year = d3.select("#yearSelect").property("value"); // Fetch dynamically
+                const value = valueByState[stateName]?.[year] || 0;
+    
+                // Validate `colorScale` before using it
+                if (!colorScale) {
+                console.error("colorScale is not initialized!");
+                return "#ccc"; // Default fallback color
+                }
+    
                 return colorScale(value);
-              });
-          })
-          .on("click", clicked)
-          .attr("d", path)
-          .attr("fill", d => {
-            const stateName = d.properties.name;
-            const year = d3.select("#yearSelect").property("value"); // Fetch dynamically
-            const value = valueByState[stateName]?.[year] || 0;
-  
-            // Validate `colorScale` before using it
-            if (!colorScale) {
-              console.error("colorScale is not initialized!");
-              return "#ccc"; // Default fallback color
-            }
-  
-            return colorScale(value);
-          });
+            });
   
         g.append("path")
-          .attr("fill", "none")
-          .attr("stroke", "white")
-          .attr("stroke-linejoin", "round")
-          .attr("d", path(topojson.mesh(us, us.objects.states, (a, b) => a !== b)));
-  
-        svg.call(zoom);
-  
+            .attr("fill", "none")
+            .attr("stroke", "white")
+            .attr("stroke-linejoin", "round")
+            .attr("d", path(topojson.mesh(us, us.objects.states, (a, b) => a !== b)));
+    
+        svg.call(zoom);  // Calls zoom when scrolling in and out
+    
         // Reset zoom and color
         function reset() {
           const year = d3.select("#yearSelect").property("value"); // Fetch dynamically
@@ -174,33 +179,90 @@ function loadMap() {
             const value = valueByState[stateName]?.[year] || 0;
             return colorScale(value);
           });
-          svg.transition().duration(750).call(
-            zoom.transform,
-            d3.zoomIdentity,
-            d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
-          );
         }
   
-        // Zoom into a specific state when clicked
+        let selectedStates = []; // Global array to track selected states
         function clicked(event, d) {
-          const year = d3.select("#yearSelect").property("value"); // Fetch dynamically
-          const [[x0, y0], [x1, y1]] = path.bounds(d);
-          event.stopPropagation();
-          states.transition().duration(300).attr("fill", d => {
-            const stateName = d.properties.name;
-            const value = valueByState[stateName]?.[year] || 0;
-            return colorScale(value);
-          });
-          d3.select(this).transition().style("fill", "red");
-          svg.transition().duration(750).call(
-            zoom.transform,
-            d3.zoomIdentity
-              .translate(width / 2, height / 2)
-              .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
-              .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-            d3.pointer(event, svg.node())
-          );
-        }
+            const stateElement = d3.select(this); // Select the clicked state
+            const stateName = d.properties.name; // Get the state name
+            const isSelected = stateElement.attr("data-selected") === "true"; // Check if the state is already selected
+        
+            // Stop any ongoing transitions
+            stateElement.interrupt();
+        
+            console.log(`Clicked state: ${stateName}`);
+        
+            if (isSelected) {
+                // Deselect the state
+                stateElement
+                    .attr("data-selected", "false")
+                    .transition()
+                    .duration(300)
+                    .attr("fill", () => {
+                        const year = d3.select("#yearSelect").property("value");
+                        const value = valueByState[stateName]?.[year] || 0;
+                        const originalColor = colorScale(value);
+                        return originalColor; // Reset to original color
+                    });
+        
+                // Remove the state from the selected list
+                selectedStates = selectedStates.filter(name => name !== stateName);
+            } else {
+                // Select the state
+                stateElement
+                    .attr("data-selected", "true")
+                    .style("fill", "red"); // Turn red immediately
+        
+                // Add the state to the selected list
+                selectedStates.push(stateName);
+            }
+        
+            // Adjust zoom to fit all selected states
+            zoomToSelectedStates();
+        }                                  
+        
+        
+        function zoomToSelectedStates() {
+            if (selectedStates.length === 0) {
+                // Reset zoom if no states are selected
+                svg.transition().duration(750).call(
+                    zoom.transform,
+                    d3.zoomIdentity,
+                    d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
+                );
+                return;
+            }
+        
+            // Calculate bounding box for selected states
+            const selectedFeatures = topojson.feature(us, us.objects.states).features.filter(d =>
+                selectedStates.includes(d.properties.name)
+            );
+        
+            const bounds = selectedFeatures.reduce(
+                (acc, feature) => {
+                    const [[x0, y0], [x1, y1]] = path.bounds(feature);
+                    return [
+                        [Math.min(acc[0][0], x0), Math.min(acc[0][1], y0)],
+                        [Math.max(acc[1][0], x1), Math.max(acc[1][1], y1)]
+                    ];
+                },
+                [[Infinity, Infinity], [-Infinity, -Infinity]]
+            );
+        
+            const [[x0, y0], [x1, y1]] = bounds;
+        
+            const dx = x1 - x0;
+            const dy = y1 - y0;
+            const x = (x0 + x1) / 2;
+            const y = (y0 + y1) / 2;
+            const scale = Math.min(8, 0.9 / Math.max(dx / width, dy / height));
+            const translate = [width / 2 - scale * x, height / 2 - scale * y];
+        
+            svg.transition().duration(750).call(
+                zoom.transform,
+                d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+            );
+        }        
   
         // Apply zoom transformations
         function zoomed(event) {
