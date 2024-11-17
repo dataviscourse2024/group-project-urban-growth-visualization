@@ -1,40 +1,40 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const globalApplicationState = {
-        selectedStates: [], // Tracks currently selected states
-        mapData: [], // Contains all state-year-value data for the line chart
-    };
+// Initialize the visualization components
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the US map
+    const mapContainer = document.getElementById('us-map');
+    loadMap();
 
-    // Initialize map and line chart
-    const map = new Map(globalApplicationState);
-    const lineChart = new LineChart(globalApplicationState);
+    // Placeholder for additional graph initializations
+    const graph1Container = document.getElementById('graph1');
+    initializeGraph1(graph1Container);
 
-    // Load the map data (validate CSV format)
-    d3.csv("data/PopulationDataClean.csv", d => ({
-        State: d.State,
-        Year: +d.Year,
-        Value: +d.Value
-    })).then(data => {
-        globalApplicationState.mapData = data;
-        console.log("Loaded data:", data);
+    const graph2Container = document.getElementById('graph2');
+    initializeGraph2(graph2Container);
 
-        // Initialize the map with the loaded data
-        map.loadMap();
-    }).catch(error => {
-        console.error("Error loading data:", error);
-    });
+    const graph3Container = document.getElementById('graph3');
+    initializeGraph3(graph3Container);
 
-    console.log("Initial selectedStates:", globalApplicationState.selectedStates);
-
-    function updateVisualization() {
-        console.log("Updating visualization with selectedStates:", globalApplicationState.selectedStates);
-        if (Array.isArray(globalApplicationState.selectedStates)) {
-            lineChart.updateSelectedStates();
-        } else {
-            console.error("selectedStates is not iterable:", globalApplicationState.selectedStates);
-        }
-    }
-    
-
-    // Listen for changes to selected states in the map
-    document.addEventListener("stateSelectionChanged", updateVisualization);
+    const graph4Container = document.getElementById('graph4');
+    initializeGraph4(graph4Container);
 });
+
+// Placeholder functions for additional graph initializations
+function initializeGraph1(container) {
+    console.log('Graph 1 initialized in:', container);
+    // Add graph rendering logic here
+}
+
+function initializeGraph2(container) {
+    console.log('Graph 2 initialized in:', container);
+    // Add graph rendering logic here
+}
+
+function initializeGraph3(container) {
+    console.log('Graph 3 initialized in:', container);
+    // Add graph rendering logic here
+}
+
+function initializeGraph4(container) {
+    console.log('Graph 4 initialized in:', container);
+    // Add graph rendering logic here
+}
