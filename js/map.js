@@ -135,7 +135,11 @@ function loadMap() {
                     const isSelected = stateElement.attr("data-selected") === "true";
 
                     if (!isSelected) {
-                        stateElement.interrupt().transition().duration(300).style("fill", "steelblue");
+                        stateElement
+                            .interrupt()
+                            .transition()
+                            .duration(300)
+                            .style("fill", "orange");
                     }
 
                     const stateName = d.properties.name;
@@ -183,11 +187,19 @@ function loadMap() {
                     return colorScale(value);
                 });
 
+            // Draw inner borders (borders between states)
             g.append("path")
                 .attr("fill", "none")
-                .attr("stroke", "white")
-                .attr("stroke-linejoin", "round")
-                .attr("d", path(topojson.mesh(us, us.objects.states, (a, b) => a !== b)));
+                .attr("stroke", "black")  // Black color for inner borders
+                .attr("stroke-width", 0.5)  // Thin line for inner borders
+                .attr("d", path(topojson.mesh(us, us.objects.states, (a, b) => a !== b))); // Only inner borders
+
+            // Draw outer borders (entire map border)
+            g.append("path")
+                .attr("fill", "none")
+                .attr("stroke", "black")  // Black color for outer borders
+                .attr("stroke-width", 0.5)  // Thin line for outer borders
+                .attr("d", path(topojson.mesh(us, us.objects.states, (a, b) => a === b))); // Outer borders
 
             svg.call(zoom);
 
