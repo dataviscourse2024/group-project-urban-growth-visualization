@@ -48,7 +48,7 @@ d3.select("#datasetSelect").on("change", function () {
     loadMap();
 });
 
-function loadMap() {
+function loadMap(global) {
     const width = 975;
     const height = 610;
 
