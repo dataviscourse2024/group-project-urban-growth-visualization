@@ -7,19 +7,21 @@ class Map {
 
         console.log("Initializing Map with globalApplicationState:", globalApplicationState);
 
-        if (!Array.isArray(globalApplicationState.mapData)) {
-            console.error("Error: mapData is not iterable. Received:", globalApplicationState.mapData);
-            return;
-        }
+        //if (!Array.isArray(globalApplicationState.mapData)) {
+        //    console.error("Error: mapData is not iterable. Received:", globalApplicationState.mapData);
+        //    return;
+        //}
 
         this.globalApplicationState = globalApplicationState;
-        this.selectedStates = [];
+        this.globalApplicationState.selectedStates = [];
+
+        loadMap();
     }
+
+
 }
 
 
-// Define the dataurl globally with a default dataset
-let dataurl = "data/PopulationDataClean.csv"; // Default dataset
 
 
 
@@ -30,16 +32,16 @@ d3.select("#datasetSelect").on("change", function () {
     // Update the global dataurl variable based on the selected dataset
     switch (selectedDataset) {
         case "population":
-            dataurl = "data/PopulationDataClean.csv";
+            globalApplicationState.dataUrl = "data/PopulationDataClean.csv";
             break;
         case "jobGrowth":
-            dataurl = "data/JobGrowth2012_2024.csv";
+            globalApplicationState.dataUrl = "data/JobGrowth2012_2024.csv";
             break;
         case "medianIncome":
-            dataurl = "data/MedianIncomeDataClean.csv";
+            globalApplicationState.dataUrl = "data/MedianIncomeDataClean.csv";
             break;
         case "housing":
-            dataurl = "data/HousingYearlyDataClean.csv";
+            globalApplicationState.dataUrl = "data/HousingYearlyDataClean.csv";
             break;
         default:
             console.error("Unknown dataset selected.");
@@ -50,8 +52,8 @@ d3.select("#datasetSelect").on("change", function () {
     loadMap();
 });
 
-function loadMap(global) {
-    console.log(dataurl);
+function loadMap() {
+    console.log(globalApplicationState.dataUrl);
     const width = 975;
     const height = 610;
 
@@ -80,16 +82,19 @@ function loadMap(global) {
     };
 
     //display overlay text differently for each dataset
+    const numberFormatter = new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: 3 // Adjust precision as needed
+    });
     const displayFormats = {
-        "data/PopulationDataClean.csv": value => 'Total Population: ${value}',
-        "data/JobGrowth2012_2024.csv": value => 'Total Population: ${value}',
-        "data/MedianIncomeDataClean.csv": d3.interpolateGreens,
-        "data/HousingYearlyDataClean.csv": d3.interpolatePurples
+        "data/PopulationDataClean.csv": value => `Total Population: ${numberFormatter.format(value)}`,
+        "data/JobGrowth2012_2024.csv": value => `Number of Jobs (Thousands): ${numberFormatter.format(value)}`,
+        "data/MedianIncomeDataClean.csv": value => `Median Income: $${numberFormatter.format(value.toFixed(2))}`,
+        "data/HousingYearlyDataClean.csv": value => `Median House Salt Price: $${numberFormatter.format(value.toFixed(2))}`
     }
     // Load map and data
     Promise.all([
         d3.json("data/us.json"), // TopoJSON map
-        d3.csv(dataurl) // CSV data for population, income, etc.
+        d3.csv(globalApplicationState.dataUrl) // CSV data for population, income, etc.
     ])
         .then(([us, valueData]) => {
             let valueByState = {};
@@ -118,7 +123,7 @@ function loadMap(global) {
 
 
                 // Define `colorScale` dynamically based on the data for the year
-                colorScale = d3.scaleSequential(colorSchemes[dataurl]).domain([minValue, maxValue]);
+                colorScale = d3.scaleSequential(colorSchemes[globalApplicationState.dataUrl]).domain([minValue, maxValue]);
             }
 
             // Set up zoom behavior
@@ -138,9 +143,7 @@ function loadMap(global) {
 
             const g = svg.append("g");
 
-            // Fetch the initial year dynamically
-            const initialYear = d3.select("#yearSelect").property("value");
-            updateDataForYear(initialYear);
+            updateDataForYear(globalApplicationState.selectedYear);
 
             // Draw the states
             let states = g.append("g")
@@ -160,14 +163,13 @@ function loadMap(global) {
                             .duration(300)
                             .style("fill", "gray");
                     }
-
+                
                     const stateName = d.properties.name;
-                    const year = d3.select("#yearSelect").property("value");
-                    const value = valueByState[stateName]?.[year] || "Unknown";
-
+                    const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || "Unknown";
+                    let displayFunction = displayFormats[globalApplicationState.dataUrl];
                     tooltip
                         .style("display", "block")
-                        .html(`<strong>${stateName}</strong><br>Value: ${value}`)
+                        .html(`<strong>${stateName}:</strong><br>  ${displayFunction(value)}`)
                         .style("left", `${event.pageX + 10}px`)
                         .style("top", `${event.pageY - 65}px`);
 
@@ -183,8 +185,7 @@ function loadMap(global) {
 
                     if (!isSelected) {
                         const stateName = d.properties.name;
-                        const year = d3.select("#yearSelect").property("value");
-                        const value = valueByState[stateName]?.[year] || 0;
+                        const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || 0;
 
                         stateElement.interrupt().transition().duration(300).style("fill", () => colorScale(value));
                     }
@@ -195,8 +196,7 @@ function loadMap(global) {
                 .attr("d", path)
                 .attr("fill", d => {
                     const stateName = d.properties.name;
-                    const year = d3.select("#yearSelect").property("value");
-                    const value = valueByState[stateName]?.[year] || 0;
+                    const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || 0;
 
                     if (!colorScale) {
                         console.error("colorScale is not initialized!");
@@ -223,15 +223,14 @@ function loadMap(global) {
             svg.call(zoom);
 
             function reset() {
-                const year = d3.select("#yearSelect").property("value");
                 states.transition().duration(300).attr("fill", d => {
                     const stateName = d.properties.name;
-                    const value = valueByState[stateName]?.[year] || 0;
+                    const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || 0;
                     return colorScale(value);
                 });
             }
 
-            let selectedStates = [];
+            globalApplicationState.selectedStates = [];
             function clicked(event, d) {
                 const stateElement = d3.select(this);
                 const stateName = d.properties.name;
@@ -245,28 +244,28 @@ function loadMap(global) {
                         .transition()
                         .duration(300)
                         .attr("fill", () => {
-                            const year = d3.select("#yearSelect").property("value");
-                            const value = valueByState[stateName]?.[year] || 0;
+                            const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || 0;
                             return colorScale(value);
                         });
-                    selectedStates = selectedStates.filter(name => name !== stateName);
+                        globalApplicationState.selectedStates = globalApplicationState.selectedStates.filter(name => name !== stateName);
                 } else {
                     stateElement
                         .attr("data-selected", "true")
                         .style("fill", "orange");
-                    selectedStates.push(stateName);
+                        globalApplicationState.selectedStates.push(stateName);
                 }
 
-                console.log("Updated selected states:", selectedStates);
+                console.log("Updated selected states:", globalApplicationState.selectedStates);
 
-                const eventDetail = { selectedStates };
+                selected = globalApplicationState.selectedStates;
+                const eventDetail = { selected };
                 document.dispatchEvent(new CustomEvent("stateSelectionChanged", { detail: eventDetail }));
 
                 zoomToSelectedStates();
             }
 
             function zoomToSelectedStates() {
-                if (selectedStates.length === 0) {
+                if (globalApplicationState.selectedStates.length === 0) {
                     svg.transition().duration(750).call(
                         zoom.transform,
                         d3.zoomIdentity,
@@ -276,7 +275,7 @@ function loadMap(global) {
                 }
 
                 const selectedFeatures = topojson.feature(us, us.objects.states).features.filter(d =>
-                    selectedStates.includes(d.properties.name)
+                    globalApplicationState.selectedStates.includes(d.properties.name)
                 );
 
                 const bounds = selectedFeatures.reduce(
@@ -314,11 +313,11 @@ function loadMap(global) {
 
             // Update the map when the year changes
             d3.select("#yearSelect").on("change", function () {
-                const year = d3.select(this).property("value");
-                console.log("Selected year (from dropdown):", year);
+                globalApplicationState.selectedYear = d3.select(this).property("value");
+                console.log("Selected year (from dropdown):", globalApplicationState.selectedYear);
 
                 // Update data and color scale for the new year
-                updateDataForYear(year);
+                updateDataForYear(globalApplicationState.selectedYear);
 
                 // Rebind data and update state colors
                 states
@@ -326,7 +325,7 @@ function loadMap(global) {
                     .duration(300)
                     .attr("fill", d => {
                         const stateName = d.properties.name;
-                        const value = valueByState[stateName]?.[year] || 0;
+                        const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || 0;
 
                         if (!colorScale) {
                             console.error("colorScale is not initialized!");

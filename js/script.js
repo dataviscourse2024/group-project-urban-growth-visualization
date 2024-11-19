@@ -1,8 +1,17 @@
+
+
+const globalApplicationState = {
+    selectedStates: [],
+    dataUrl: "data/PopulationDataClean.csv",
+    selectedYear: "2012",
+    mapVis: null
+};
+
 // Initialize the visualization components
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the US map
-    const mapContainer = document.getElementById('us-map');
-    loadMap();
+
+    globalApplicationState.mapVis = new Map(globalApplicationState);
 
     // Placeholder for additional graph initializations
     const graph1Container = document.getElementById('graph1');
