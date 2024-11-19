@@ -5,28 +5,36 @@ html, body {
   height: 100%;
 }
 
-/* Main container styling */
+/* Overall container for map and graphs */
 #container {
-  display: flex;
-  height: 100%;
-  width: 100%;
+  display: flex; /* Use flexbox for horizontal layout */
+  gap: 20px; /* Space between map and graphs */
+  align-items: flex-start; /* Align map and graphs at the top */
+  margin: 20px;
 }
 
-/* Left container for the map */
+/* Map container */
 #map-container {
-  flex: 50%;
-  padding: 10px;
-  border-right: 2px solid #333;
+  flex: 1; /* Let the map take up as much space as it needs */
 }
 
-/* Right container for graphs */
+/* Graphs container */
 #graphs-container {
-  flex: 50%;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
-  grid-template-rows: 1fr 1fr; /* Two rows */
-  gap: 10px; /* Space between graph containers */
-  padding: 10px;
+  display: grid; /* Use grid for arranging graphs */
+  grid-template-columns: repeat(2, 1fr); /* 2 columns for 4 graphs */
+  gap: 20px; /* Space between graphs */
+  flex: 2; /* Let graphs container take up remaining space */
+}
+
+/* Individual graph styling */
+.graph {
+  width: 450px;
+  height: 300px;
+  border: 1px solid #ccc; /* Add a border for visibility */
+  background-color: #f9f9f9; /* Light background for contrast */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Graph container styling */

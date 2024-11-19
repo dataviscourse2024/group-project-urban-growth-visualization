@@ -17,12 +17,7 @@ class Map {
 
         loadMap();
     }
-
-
 }
-
-
-
 
 
 // Event listener for dataset dropdown

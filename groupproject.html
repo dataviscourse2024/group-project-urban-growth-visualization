@@ -48,23 +48,16 @@
     <div id="container">
         <!-- Map container -->
         <div id="map-container">
-            <div id="us-map-svg"></div>
+            <div id="us-map-svg" style="width: 400px; height: 300px; margin: auto;"></div>
         </div>
 
         <!-- Graphs container -->
         <div id="graphs-container">
-            <div id="graph1" class="graph">
-                <svg>
-                    <g id="x-axis"></g>
-                    <g id="y-axis"></g>
-                    <g id="lines"></g>
-                    <g id="overlay"></g>
-                </svg>
-            </div>            
-            <div id="graph2" class="graph">graph 2</div>
-            <div id="graph3" class="graph">graph 3</div>
-            <div id="graph4" class="graph">graph 4</div>
-        </div>        
+            <div id="graph1" class="graph"></div> <!-- Bar Graph -->
+            <div id="graph2" class="graph"></div> <!-- Line Chart -->
+            <div id="graph3" class="graph"></div> <!-- Placeholder -->
+            <div id="graph4" class="graph"></div> <!-- Placeholder -->
+        </div>
     </div>
 
     <!-- Tooltip for map interaction -->
@@ -72,6 +65,7 @@
 
     <!-- JavaScript files -->
     <script src="js/map.js"></script> <!-- Map logic -->
+    <script src="js/bar-graph.js"></script> <!-- Bar graph logic -->
     <script src="js/line-chart.js"></script> <!-- Line chart logic -->
     <script src="js/script.js"></script> <!-- Main interaction logic -->
 </body>
