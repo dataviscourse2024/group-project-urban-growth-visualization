@@ -49,6 +49,7 @@ d3.select("#datasetSelect").on("change", function () {
 });
 
 function loadMap(global) {
+    console.log(dataurl);
     const width = 975;
     const height = 610;
 
@@ -90,16 +91,17 @@ function loadMap(global) {
                     valueByState[d.State][d.Year] = +d.Value;
                 });
 
-                // Get values for the year and update the color scale
-                const valuesForYear = valueData
-                    .filter(d => d.Year === year)
+
+                let valuesForYear = valueData
+                    .filter(d => d.Year === year && d.State !== "United States") //Prevent the total from being the max value.
                     .map(d => +d.Value);
 
-                const maxValue = d3.max(valuesForYear) || 0; // Default to 0 if no values
+                let minValue = d3.min(valuesForYear) || 0;
+                let maxValue = d3.max(valuesForYear) || 0; // Default to 0 if no values
                 console.log("Max value for year:", maxValue);
 
                 // Define `colorScale` dynamically based on the data for the year
-                colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, maxValue]);
+                colorScale = d3.scaleSequential(d3.interpolateBlues).domain([minValue, maxValue]);
             }
 
             // Set up zoom behavior
