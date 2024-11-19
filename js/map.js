@@ -21,6 +21,8 @@ class Map {
 // Define the dataurl globally with a default dataset
 let dataurl = "data/PopulationDataClean.csv"; // Default dataset
 
+
+
 // Event listener for dataset dropdown
 d3.select("#datasetSelect").on("change", function () {
     const selectedDataset = this.value;
@@ -69,6 +71,21 @@ function loadMap(global) {
         .style("display", "none")
         .style("pointer-events", "none");
 
+    //different colored gradients for each dataset
+    const colorSchemes = {
+            "data/PopulationDataClean.csv": d3.interpolateBlues,
+            "data/JobGrowth2012_2024.csv": d3.interpolateReds,
+            "data/MedianIncomeDataClean.csv": d3.interpolateGreens,
+            "data/HousingYearlyDataClean.csv": d3.interpolatePurples
+    };
+
+    //display overlay text differently for each dataset
+    const displayFormats = {
+        "data/PopulationDataClean.csv": value => 'Total Population: ${value}',
+        "data/JobGrowth2012_2024.csv": value => 'Total Population: ${value}',
+        "data/MedianIncomeDataClean.csv": d3.interpolateGreens,
+        "data/HousingYearlyDataClean.csv": d3.interpolatePurples
+    }
     // Load map and data
     Promise.all([
         d3.json("data/us.json"), // TopoJSON map
@@ -80,7 +97,7 @@ function loadMap(global) {
 
             // Function to update data and color scale for the selected year
             function updateDataForYear(year) {
-                console.log("Updating data for year:", year);
+
 
                 // Prepare `valueByState` for the selected year
                 valueByState = {};
@@ -98,10 +115,10 @@ function loadMap(global) {
 
                 let minValue = d3.min(valuesForYear) || 0;
                 let maxValue = d3.max(valuesForYear) || 0; // Default to 0 if no values
-                console.log("Max value for year:", maxValue);
+
 
                 // Define `colorScale` dynamically based on the data for the year
-                colorScale = d3.scaleSequential(d3.interpolateBlues).domain([minValue, maxValue]);
+                colorScale = d3.scaleSequential(colorSchemes[dataurl]).domain([minValue, maxValue]);
             }
 
             // Set up zoom behavior
@@ -141,7 +158,7 @@ function loadMap(global) {
                             .interrupt()
                             .transition()
                             .duration(300)
-                            .style("fill", "orange");
+                            .style("fill", "gray");
                     }
 
                     const stateName = d.properties.name;
