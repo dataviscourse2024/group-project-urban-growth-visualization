@@ -1,7 +1,7 @@
 class Map {
     constructor(globalApplicationState) {
-        if (!this.globalApplicationState) {
-            console.error("Error: this.globalApplicationState is undefined.");
+        if (!globalApplicationState) {
+            console.error("Error: globalApplicationState is undefined.");
             return;
         }        
 
@@ -14,37 +14,12 @@ class Map {
 
         this.globalApplicationState = globalApplicationState;
         this.globalApplicationState.selectedStates = [];
+        loadMap();
     }
 }
 
 
-// Event listener for dataset dropdown
-d3.select("#datasetSelect").on("change", function () {
-    const selectedDataset = this.value;
-    const state = this.globalApplicationState; // Add a reference if needed
 
-    // Update the global dataurl variable based on the selected dataset
-    switch (selectedDataset) {
-        case "population":
-            globalApplicationState.dataUrl = "data/PopulationDataClean.csv";
-            break;
-        case "jobGrowth":
-            globalApplicationState.dataUrl = "data/JobGrowth2012_2024.csv";
-            break;
-        case "medianIncome":
-            globalApplicationState.dataUrl = "data/MedianIncomeDataClean.csv";
-            break;
-        case "housing":
-            globalApplicationState.dataUrl = "data/HousingYearlyDataClean.csv";
-            break;
-        default:
-            console.error("Unknown dataset selected.");
-            return;
-    }
-
-    // Reload the map with the new dataset
-    loadMap();
-});
 
 function loadMap() {
     console.log(globalApplicationState.dataUrl);

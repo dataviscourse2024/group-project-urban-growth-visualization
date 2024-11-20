@@ -87,3 +87,30 @@ function setupDropdownListeners() {
         });
     });
 }
+
+// Event listener for dataset dropdown
+d3.select("#datasetSelect").on("change", function () {
+    const selectedDataset = this.value;
+
+    // Update the global dataurl variable based on the selected dataset
+    switch (selectedDataset) {
+        case "population":
+            globalApplicationState.dataUrl = "data/PopulationDataClean.csv";
+            break;
+        case "jobGrowth":
+            globalApplicationState.dataUrl = "data/JobGrowth2012_2024.csv";
+            break;
+        case "medianIncome":
+            globalApplicationState.dataUrl = "data/MedianIncomeDataClean.csv";
+            break;
+        case "housing":
+            globalApplicationState.dataUrl = "data/HousingYearlyDataClean.csv";
+            break;
+        default:
+            console.error("Unknown dataset selected.");
+            return;
+    }
+
+    // Reload the map with the new dataset
+    globalApplicationState.mapVis.loadMap();
+});
