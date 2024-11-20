@@ -1,74 +1,55 @@
-/* General reset for margins and paddings */
-html, body {
+body {
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
-/* Overall container for map and graphs */
-#container {
-  display: flex; /* Use flexbox for horizontal layout */
-  gap: 20px; /* Space between map and graphs */
-  align-items: flex-start; /* Align map and graphs at the top */
+h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.dropdown-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+#main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin: 20px;
 }
 
-/* Map container */
-#map-container {
-  flex: 1; /* Let the map take up as much space as it needs */
+#map-container, #line-chart-container {
+  flex: 1;
+  max-width: 45%;
+  height: 500px;
 }
 
-/* Graphs container */
-#graphs-container {
-  display: grid; /* Use grid for arranging graphs */
-  grid-template-columns: repeat(2, 1fr); /* 2 columns for 4 graphs */
-  gap: 20px; /* Space between graphs */
-  flex: 2; /* Let graphs container take up remaining space */
+#line-chart {
+  width: 100%;
+  height: 100%;
 }
 
-/* Individual graph styling */
-.graph {
-  width: 450px;
-  height: 300px;
-  border: 1px solid #ccc; /* Add a border for visibility */
-  background-color: #f9f9f9; /* Light background for contrast */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+#us-map-svg {
+  width: 100%;
+  height: 100%;
 }
 
-/* Graph container styling */
-.graph {
-  border: 2px solid black;
-  background-color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+#line-chart {
+  width: 100%;
+  height: 100%;
 }
 
-/* Tooltip styling */
 .tooltip {
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  line-height: 1.5;
-  pointer-events: none;
   position: absolute;
   background-color: #f9f9f9;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
-  display: none; /* Initially hidden */
-  z-index: 1000;
-}
-
-/* Title and dropdown styling */
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.dropdown-container {
-  text-align: center;
-  margin-bottom: 20px;
+  display: none;
+  pointer-events: none;
 }

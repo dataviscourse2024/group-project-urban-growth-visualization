@@ -1,9 +1,9 @@
 class Map {
     constructor(globalApplicationState) {
-        if (!globalApplicationState) {
-            console.error("Error: globalApplicationState is undefined.");
+        if (!this.globalApplicationState) {
+            console.error("Error: this.globalApplicationState is undefined.");
             return;
-        }
+        }        
 
         console.log("Initializing Map with globalApplicationState:", globalApplicationState);
 
@@ -14,8 +14,6 @@ class Map {
 
         this.globalApplicationState = globalApplicationState;
         this.globalApplicationState.selectedStates = [];
-
-        loadMap();
     }
 }
 
@@ -23,6 +21,7 @@ class Map {
 // Event listener for dataset dropdown
 d3.select("#datasetSelect").on("change", function () {
     const selectedDataset = this.value;
+    const state = this.globalApplicationState; // Add a reference if needed
 
     // Update the global dataurl variable based on the selected dataset
     switch (selectedDataset) {
@@ -332,4 +331,4 @@ function loadMap() {
             });
         })
         .catch(error => console.error("Error loading data:", error));
-}
+}                

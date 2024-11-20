@@ -44,29 +44,23 @@
         </select>
     </div>
 
-    <!-- Main container for map and graphs -->
-    <div id="container">
-        <!-- Map container -->
+    <!-- Main layout container -->
+    <div id="main-container">
         <div id="map-container">
-            <div id="us-map-svg" style="width: 400px; height: 300px; margin: auto;"></div>
+            <div id="us-map-svg"></div>
         </div>
-
-        <!-- Graphs container -->
-        <div id="graphs-container">
-            <div id="graph1" class="graph"></div> <!-- Bar Graph -->
-            <div id="graph2" class="graph"></div> <!-- Line Chart -->
-            <div id="graph3" class="graph"></div> <!-- Placeholder -->
-            <div id="graph4" class="graph"></div> <!-- Placeholder -->
+        <div id="line-chart-container">
+            <svg id="line-chart"></svg>
         </div>
-    </div>
+    </div>  
+    
 
     <!-- Tooltip for map interaction -->
     <div class="tooltip" id="tooltip"></div>
 
     <!-- JavaScript files -->
-    <script src="js/map.js"></script> <!-- Map logic -->
-    <script src="js/bar-graph.js"></script> <!-- Bar graph logic -->
-    <script src="js/line-chart.js"></script> <!-- Line chart logic -->
-    <script src="js/script.js"></script> <!-- Main interaction logic -->
+    <script src="js/script.js"></script>    
+    <script src="js/line-chart.js"></script>
+    <script src="js/map.js"></script>
 </body>
 </html>
