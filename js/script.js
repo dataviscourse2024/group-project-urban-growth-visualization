@@ -2,8 +2,11 @@
 const globalApplicationState = {
     selectedStates: [],
     selectedYear: "2012",
-    dataUrl: "data/PopulationDataClean.csv",
+    selectedDataset: "population",
     populationData: null,
+    jobData: null,
+    housepriceData: null,
+    incomeData: null,
     mapData: null,
     mapVis: null,
     lineChart: null,
@@ -16,7 +19,10 @@ window.globalApplicationState = globalApplicationState;
 async function loadData() {
     try {
         // Load population and map data
-        const populationData = await d3.csv(globalApplicationState.dataUrl);
+        const populationData = await d3.csv("data/PopulationDataClean.csv");
+        const jobData = await d3.csv("data/JobGrowth2012_2024.csv");
+        const incomeData = await d3.csv("data/MedianIncomeDataClean.csv");
+        const housepriceData= await d3.csv("data/HousingYearlyDataClean.csv");
         const mapData = await d3.json("data/us.json");
 
         // Log loaded data
@@ -24,11 +30,9 @@ async function loadData() {
         console.log("Map Data Loaded:", mapData);
 
         // Assign data to global state
-        globalApplicationState.populationData = populationData;
-        globalApplicationState.mapData = mapData;
 
         // Return loaded data
-        return { populationData, mapData };
+        return { populationData, jobData, incomeData, housepriceData, mapData };
     } catch (error) {
         console.error("Error loading data:", error);
         throw error;
@@ -37,56 +41,25 @@ async function loadData() {
 
 // Initialize the application
 loadData().then((loadedData) => {
-    console.log("Initializing visuals...");
+    globalApplicationState.populationData = loadedData.populationData;
+    globalApplicationState.jobData = loadedData.jobData;
+    globalApplicationState.incomeData = loadedData.incomeData;
+    globalApplicationState.housepriceData = loadedData.housepriceData;
+    globalApplicationState.mapData = loadedData.mapData;
+
+
 
     // Initialize the map visualization
     const mapVis = new Map(globalApplicationState);
     globalApplicationState.mapVis = mapVis;
-
-    // Initialize the line chart visualization
-    const lineChart = new LineChart(globalApplicationState);
-    globalApplicationState.lineChart = lineChart;
-
-    // Force initial rendering of the map and line chart
-    console.log("Rendering map and line chart...");
-    globalApplicationState.mapVis.updateMap();
-    globalApplicationState.lineChart.updateSelectedStates();
-
-    // Set up dropdown change listeners
-    setupDropdownListeners();
+    globalApplicationState.mapVis.loadMap();
 
     console.log("Visuals initialized.");
 }).catch((error) => {
     console.error("Failed to initialize application:", error);
 });
 
-// Function to set up dropdown change listeners
-function setupDropdownListeners() {
-    d3.select("#yearSelect").on("change", function () {
-        globalApplicationState.selectedYear = this.value;
 
-        console.log(`Year changed to: ${globalApplicationState.selectedYear}`);
-        globalApplicationState.mapVis.updateMap();
-        globalApplicationState.lineChart.updateSelectedStates();
-    });
-
-    d3.select("#datasetSelect").on("change", function () {
-        globalApplicationState.dataUrl = `data/${this.value}.csv`;
-
-        console.log(`Dataset changed to: ${globalApplicationState.dataUrl}`);
-        d3.csv(globalApplicationState.dataUrl).then(newData => {
-            newData.forEach(d => {
-                d.Value = +d.Value; // Ensure numerical values
-                d.Year = d.Year.trim(); // Clean up year formatting
-            });
-
-            globalApplicationState.populationData = newData;
-
-            globalApplicationState.mapVis.updateMap();
-            globalApplicationState.lineChart.updateSelectedStates();
-        });
-    });
-}
 
 // Event listener for dataset dropdown
 d3.select("#datasetSelect").on("change", function () {
@@ -95,16 +68,16 @@ d3.select("#datasetSelect").on("change", function () {
     // Update the global dataurl variable based on the selected dataset
     switch (selectedDataset) {
         case "population":
-            globalApplicationState.dataUrl = "data/PopulationDataClean.csv";
+            globalApplicationState.selectedDataset = "population";
             break;
         case "jobGrowth":
-            globalApplicationState.dataUrl = "data/JobGrowth2012_2024.csv";
+            globalApplicationState.selectedDataset = "jobGrowth";
             break;
         case "medianIncome":
-            globalApplicationState.dataUrl = "data/MedianIncomeDataClean.csv";
+            globalApplicationState.selectedDataset = "income";
             break;
         case "housing":
-            globalApplicationState.dataUrl = "data/HousingYearlyDataClean.csv";
+            globalApplicationState.selectedDataset = "housing";
             break;
         default:
             console.error("Unknown dataset selected.");
