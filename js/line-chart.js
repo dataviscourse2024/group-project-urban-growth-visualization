@@ -20,6 +20,7 @@ class LineChart {
         this.g.selectAll("*").remove();
     
         const data = this.globalApplicationState.currData;
+
         if (!Array.isArray(data)) {
             console.error("Error: Data is not an array.");
             return;

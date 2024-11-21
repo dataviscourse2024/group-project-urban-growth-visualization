@@ -16,10 +16,6 @@ class Map {
         this.globalApplicationState.selectedStates = [];
     }
 
-
-
-
-
     loadMap() {
         const width = 975;
         const height = 610;
@@ -29,9 +25,7 @@ class Map {
         mapContainer.selectAll("*").remove();
 
         const mapData = globalApplicationState.mapData;
-
-        let valueData = this.globalApplicationState.currData;
-
+        let valueData = globalApplicationState.currData;
 
         if (!mapData || !valueData) {
             console.error("Error: Map or population data is not loaded.");
@@ -74,35 +68,34 @@ class Map {
 
         // Function to update data and color scale for the selected year
         function updateDataForYear(year) {
-
-
             // Prepare `valueByState` for the selected year
             valueByState = {};
-            valueData.forEach(d => {
+            globalApplicationState.currData.forEach(d => {
                 if (!valueByState[d.State]) {
                     valueByState[d.State] = {};
                 }
-                valueByState[d.State][d.Year] = +d.Value;
+                valueByState[d.State][d.Year] = +d.Value; // Ensure Value is parsed as a number
             });
-
-
-            let valuesForYear = valueData
-                .filter(d => d.Year === year && d.State !== "United States") //Prevent the total from being the max value.
-                .map(d => +d.Value);
-
-            let dataMinusUs = valueData
-                .filter(d => d.State !== "United States") //Prevent the total from being the max value.
-                .map(d => +d.Value);
-            
-            let minValue = d3.min(dataMinusUs) || 0;
-            let maxValue = d3.max(dataMinusUs) || 0; // Default to 0 if no values
-
-
-            // Define `colorScale` dynamically based on the data for the year
-            colorScale = d3.scaleSequential(colorSchemes[globalApplicationState.selectedDataset]).domain([minValue, maxValue]);
         
-            updateLegend(minValue, maxValue)
+            // Filter values for the selected year
+            const valuesForYear = globalApplicationState.currData
+                .filter(d => +d.Year === +year && d.State !== "United States") // Exclude aggregate values
+                .map(d => +d.Value); // Ensure numeric conversion
+        
+            const minValue = d3.min(valuesForYear) || 0; // Handle empty arrays
+            const maxValue = d3.max(valuesForYear) || 1; // Avoid division by zero in scale
+        
+            // Update the color scale
+            colorScale = d3.scaleSequential(colorSchemes[globalApplicationState.selectedDataset])
+                .domain([minValue, maxValue]);
+        
+            // Update the legend
+            updateLegend(minValue, maxValue);
+        
+            console.log(`Data updated for year ${year}:`, valueByState);
+            console.log(`Color scale domain: [${minValue}, ${maxValue}]`);
         }
+           
 
         // Set up zoom behavior
         const zoom = d3.zoom()
@@ -138,7 +131,7 @@ class Map {
                     stateElement
                         .interrupt()
                         .transition()
-                        .duration(300)
+                        .duration(200)
                         .style("fill", "gray");
                 }
 
@@ -263,8 +256,16 @@ class Map {
                 .style("align-items", "center")
                 .style("margin-top", "10px");
         
+            // Add a dynamic label above the legend
+            const dynamicLabel = legendContainer.append("div")
+                .attr("id", "dynamic-label")
+                .style("margin-bottom", "10px")
+                .style("font-size", "18px")
+                .style("font-weight", "bold")
+                .text(""); // Placeholder for now
+
             // Set legend dimensions
-            const legendWidth = 300;
+            const legendWidth = 200;
             const legendHeight = 20;
         
             // Append the SVG for the legend
@@ -312,46 +313,91 @@ class Map {
             labelContainer.append("div")
                 .text(maxValue.toLocaleString())
                 .style("text-align", "right");
+
+            // Update the dynamic label text based on the dataset and year
+            updateDynamicLabel();
         
-            // Add interactive scroll bar for years
-            const scrollBarContainer = legendContainer.append("div")
+            d3.select("#scroll-bar-container").remove();
+            
+            // Add Scroll Bar for Year Selection
+            const scrollBarContainer = d3.select("#map-container")
+                .append("div")
                 .attr("id", "scroll-bar-container")
-                .style("width", `${legendWidth}px`)
-                .style("margin-top", "10px")
-                .style("position", "relative");
+                .style("margin-top", "20px")
+                .style("display", "flex")
+                .style("justify-content", "center");
         
             const yearRange = [2012, 2024]; // Replace with your actual year range
         
-            const yearSlider = scrollBarContainer.append("input")
-                .attr("type", "range")
-                .attr("min", yearRange[0])
-                .attr("max", yearRange[1])
-                .attr("step", 1)
-                .attr("value", globalApplicationState.selectedYear)
-                .attr("id", "year-slider")
-                .style("width", "100%");
-        
-            // Add both 'input' and 'change' listeners
-            yearSlider.on("input change", function () {
-                const selectedYear = +this.value;
+            scrollBarContainer.append("input")
+            .attr("type", "range")
+            .attr("min", yearRange[0])
+            .attr("max", yearRange[1])
+            .attr("step", 1) // Keep step at 1 for discrete year intervals
+            .attr("value", globalApplicationState.selectedYear)
+            .attr("id", "year-slider")
+            .style("width", "100%")
+            .on("input", function () {
+                // Continuous feedback while dragging
+                const rawValue = +this.value; // Get the slider's raw value
+                globalApplicationState.selectedYear = Math.round(rawValue); // Snap to the nearest year
+    
+                // Update the dynamic label text in real-time
+                updateDynamicLabel();
+    
+                // Provide live feedback to the map
+                updateMapDuringDrag(rawValue);
+            })
+            .on("change", function () {
+                // Final update when dragging stops
+                const rawValue = +this.value;
+                const selectedYear = Math.round(rawValue); // Snap to nearest year
                 globalApplicationState.selectedYear = selectedYear;
-        
-                // Update map and visuals dynamically
+    
+                // Update map data and re-render states
                 updateDataForYear(selectedYear);
                 states
                     .transition()
-                    .duration(200) // Smooth transition
+                    .duration(300)
                     .attr("fill", d => {
                         const stateName = d.properties.name;
                         const value = valueByState[stateName]?.[selectedYear] || 0;
                         return colorScale(value);
                     });
-        
+    
                 console.log(`Year updated to: ${selectedYear}`);
             });
         }                
         
+        function updateDynamicLabel() {
+            const year = globalApplicationState.selectedYear;
+            const dataset = globalApplicationState.selectedDataset;
         
+            // Tooltip text for datasets
+            const displayFormats = {
+                "population": `Total Population in ${year}`,
+                "jobGrowth": `Job Growth (Thousands) in ${year}`,
+                "income": `Median Income in ${year}`,
+                "housing": `Median Housing Price in ${year}`
+            };
+        
+            const labelText = displayFormats[dataset] || `Data for ${year}`;
+            d3.select("#dynamic-label").text(labelText);
+        }
+
+        function updateMapDuringDrag(rawValue) {
+            const nearestYear = Math.round(rawValue); // Snap to the nearest year
+            console.log(`Dragging year: ${rawValue}, Nearest year: ${nearestYear}`);
+        
+            // Update map with temporary interpolated values
+            states
+                .attr("fill", d => {
+                    const stateName = d.properties.name;
+                    const value = valueByState[stateName]?.[nearestYear] || 0;
+                    return colorScale(value);
+                });
+        }
+
         function zoomToSelectedStates() {
             if (globalApplicationState.selectedStates.length === 0) {
                 svg.transition().duration(750).call(
