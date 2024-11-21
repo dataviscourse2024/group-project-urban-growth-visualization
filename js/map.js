@@ -1,7 +1,7 @@
 class Map {
     constructor(globalApplicationState) {
         if (!globalApplicationState) {
-            console.error("Error: globalApplicationState is undefined.");
+            console.error("Error: globalApplicationState map is undefined.");
             return;
         }
 
@@ -207,10 +207,11 @@ class Map {
             const stateElement = d3.select(this);
             const stateName = d.properties.name;
             const isSelected = stateElement.attr("data-selected") === "true";
-
+        
             stateElement.interrupt();
-
+        
             if (isSelected) {
+                // Deselect the state
                 stateElement
                     .attr("data-selected", "false")
                     .transition()
@@ -219,29 +220,41 @@ class Map {
                         const value = valueByState[stateName]?.[globalApplicationState.selectedYear] || 0;
                         return colorScale(value);
                     });
+        
+                // Remove state from selectedStates
                 globalApplicationState.selectedStates = globalApplicationState.selectedStates.filter(name => name !== stateName);
             } else {
+                // Select the state
                 stateElement
                     .attr("data-selected", "true")
-                    .style("fill", "red")
+                    .style("fill", "red");
+        
+                // Add state to selectedStates
                 globalApplicationState.selectedStates.push(stateName);
             }
-
+        
             console.log("Updated selected states:", globalApplicationState.selectedStates);
-
-            let selected = globalApplicationState.selectedStates;
-            const eventDetail = { selected };
-            document.dispatchEvent(new CustomEvent("stateSelectionChanged", { detail: eventDetail }));
-
+        
+            // Trigger stateSelectionChanged event
+            document.dispatchEvent(new CustomEvent("stateSelectionChanged", {
+                detail: { selectedStates: globalApplicationState.selectedStates }
+            }));
+        
+            // Zoom to selected states
             zoomToSelectedStates();
-
-            // Update line chart
+        
+            // Update the line chart
             if (globalApplicationState.currGraph) {
-                globalApplicationState.currGraph.updateChart(globalApplicationState.selectedStates);
+                try {
+                    globalApplicationState.currGraph.updateChart(globalApplicationState.selectedStates);
+                } catch (error) {
+                    console.error("Error while updating the chart:", error);
+                }
             } else {
                 console.error("currGraph is undefined. Ensure it is properly initialized.");
             }
         }
+        
 
         function updateLegend(minValue, maxValue) {
             // Remove any existing legend and scroll bar
