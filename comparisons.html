@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heatmap of Datasets</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+               /* Center the heatmap container along the x-axis */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        #heatmap {
+            display: inline-block;
+        }
+
+        .heatmap-cell {
+            stroke: #ddd;
+        }
+
+        .axis-label {
+            font-size: 12px;
+            text-anchor: middle;
+        }
+
+        .heatmap-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+        }
+         
+
+        #plot-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .dropdown-container {
+            margin-bottom: 20px;
+        }
+
+        select {
+            font-size: 14px;
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        svg {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .bubble {
+            fill-opacity: 0.7;
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+
+        .bubble:hover {
+            fill-opacity: 1;
+            cursor: pointer;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="heatmap"></div>
+    <div id="tooltip" class="heatmap-tooltip"></div>
+
+    <script src = "heatmapcells.js"></script>
+
+    <div id="plot-container">
+        <!-- Dropdowns for Year, x-axis, and y-axis selection -->
+        <div class="dropdown-container">
+            <select id="x-axis">
+                <option Value="population">Population</option>
+                <option Value="median_income">Median Income</option>
+                <option Value="housing_prices">Housing Prices</option>
+                <option Value="jobs">Jobs</option>
+            </select>
+
+            <select id="y-axis">
+                <option Value="population">Population</option>
+                <option Value="median_income">Median Income</option>
+                <option Value="housing_prices">Housing Prices</option>
+                <option Value="jobs">Jobs</option>
+            </select>
+
+            <select id="Year">
+                <!-- Years will be populated dynamically -->
+            </select>
+        </div>
+
+        <!-- The bubble plot SVG will be inserted here -->
+        <svg id="bubble-plot"></svg>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+    <script src = bubblechart.js></script>
+
+</body>
+</html>
