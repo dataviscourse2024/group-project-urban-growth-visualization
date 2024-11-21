@@ -42,95 +42,92 @@ class LineChart {
         console.log("LineChart initialized with globalApplicationState:", this.globalApplicationState);
     }
 
-    updateChart(selectedStates) {
-        // Log the states passed to the chart
-        console.log("updateChart called with selectedStates:", selectedStates);
+    updateChart(selectedStates, selectedYear) {
+        console.log(`updateChart called with selectedStates: ${selectedStates} and selectedYear: ${selectedYear}`);
     
-        if (!this.globalApplicationState) {
-            console.error("Error: globalApplicationState line-chart is undefined in updateChart.");
-            return;
-        }
-        // Validate currData from global application state
-        const data = this.globalApplicationState.currData;
-        if (!data || data.length === 0) {
-            console.error("Error: currData is null or empty.");
+        // Check if data is available
+        if (!this.data || this.data.length === 0) {
+            console.error("LineChart: No data available to update the chart.");
             return;
         }
     
-        // Filter data for selected states
-        const filteredData = data.filter(d => selectedStates.includes(d.State));
-        console.log("Filtered data:", filteredData);
+        // Check if any states are selected
+        if (!selectedStates || selectedStates.length === 0) {
+            console.log("No states selected. Clearing the line chart.");
     
+            // Clear the chart
+            this.svg.selectAll("*").remove();
+            return;
+        }
+    
+        // Filter data based on selected states and year
+        const filteredData = this.data.filter(
+            d => selectedStates.includes(d.state) && d.year === selectedYear
+        );
+    
+        console.log(`Filtered data: ${filteredData.length > 0 ? filteredData : "No matching data found"}`);
+    
+        // If no data matches the filters, clear the chart
         if (filteredData.length === 0) {
-            console.warn("No data available for the selected states.");
-            this.g.selectAll("*").remove(); // Clear the chart if no data is available
-            this.g.append("text")
-                .attr("x", this.width / 2)
-                .attr("y", this.height / 2)
-                .attr("text-anchor", "middle")
-                .text("No data for selected states.");
+            console.log("No data available for the selected states and year.");
+            this.svg.selectAll("*").remove();
             return;
         }
     
-        // Clear any previous content from the chart
-        this.g.selectAll("*").remove();
+        // Render chart using the filtered data
+        try {
+            // Clear the chart before rendering new elements
+            this.svg.selectAll("*").remove();
     
-        // Define years (2012-2024) for the x-axis domain
-        const years = Array.from(new Set(filteredData.map(d => +d.Year)));
-        const x = d3.scaleLinear()
-            .domain(d3.extent(years)) // Extent finds [min, max]
-            .range([0, this.width]);
+            // Define scales (adjust based on your data)
+            const xScale = d3
+                .scaleLinear()
+                .domain(d3.extent(filteredData, d => d.year))
+                .range([this.margin.left, this.width - this.margin.right]);
     
-        // Define y-axis domain based on values
-        const y = d3.scaleLinear()
-            .domain([0, d3.max(filteredData, d => +d.Value)])
-            .range([this.height, 0]);
+            const yScale = d3
+                .scaleLinear()
+                .domain([0, d3.max(filteredData, d => d.value)])
+                .range([this.height - this.margin.bottom, this.margin.top]);
     
-        // Create a color scale for states
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+            // Define axes
+            const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
+            const yAxis = d3.axisLeft(yScale);
     
-        // Add x-axis
-        this.g.append("g")
-            .attr("transform", `translate(0,${this.height})`)
-            .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // Format years as integers
+            // Append axes to the SVG
+            this.svg
+                .append("g")
+                .attr("transform", `translate(0, ${this.height - this.margin.bottom})`)
+                .call(xAxis);
     
-        // Add y-axis
-        this.g.append("g")
-            .call(d3.axisLeft(y));
+            this.svg
+                .append("g")
+                .attr("transform", `translate(${this.margin.left}, 0)`)
+                .call(yAxis);
     
-        // Group data by state for plotting
-        const groupedData = d3.group(filteredData, d => d.State);
+            // Create line generator
+            const line = d3
+                .line()
+                .x(d => xScale(d.year))
+                .y(d => yScale(d.value));
     
-        // Plot a line for each state
-        groupedData.forEach((stateData, state) => {
-            this.g.append("path")
-                .datum(stateData)
-                .attr("fill", "none")
-                .attr("stroke", color(state))
-                .attr("stroke-width", 1.5)
-                .attr("d", d3.line()
-                    .x(d => x(+d.Year))
-                    .y(d => y(+d.Value))
-                );
+            // Bind data and create lines
+            this.svg
+                .selectAll(".line")
+                .data(filteredData)
+                .enter()
+                .append("path")
+                .attr("class", "line")
+                .attr("d", d => line(d.values)) // Adjust 'values' as per your data structure
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 2)
+                .attr("fill", "none");
     
-            // Add labels or tooltips if necessary (optional)
-        });
-    
-        // Add legend
-        const legend = this.g.append("g").attr("transform", `translate(${this.width - 100},20)`);
-        Array.from(groupedData.keys()).forEach((state, i) => {
-            legend.append("rect")
-                .attr("x", 0)
-                .attr("y", i * 20)
-                .attr("width", 10)
-                .attr("height", 10)
-                .attr("fill", color(state));
-            legend.append("text")
-                .attr("x", 15)
-                .attr("y", i * 20 + 10)
-                .text(state);
-        });
-    } 
+            console.log("Chart successfully updated.");
+        } catch (error) {
+            console.error("Error while updating the chart:", error);
+        }
+    }    
 }
 
 // Initialize Line Chart

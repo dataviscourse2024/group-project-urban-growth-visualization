@@ -1,9 +1,9 @@
 class Map {
     constructor(globalApplicationState) {
-        if (!globalApplicationState) {
-            console.error("Error: globalApplicationState map is undefined.");
-            return;
-        }
+        // if (!globalApplicationState) {
+        //     console.error("Error: globalApplicationState.map is undefined.");
+        //     return;
+        // }
 
         console.log("Initializing Map with globalApplicationState:", globalApplicationState);
 
@@ -228,9 +228,13 @@ class Map {
                 stateElement
                     .attr("data-selected", "true")
                     .style("fill", "red");
-        
+            
                 // Add state to selectedStates
                 globalApplicationState.selectedStates.push(stateName);
+                // globalApplicationState.currGraph.updateChart(
+                //     globalApplicationState.selectedStates,
+                //     globalApplicationState.selectedYear
+                // );
             }
         
             console.log("Updated selected states:", globalApplicationState.selectedStates);
@@ -243,10 +247,13 @@ class Map {
             // Zoom to selected states
             zoomToSelectedStates();
         
-            // Update the line chart
+            // Update the line chart with the current state of the global application
             if (globalApplicationState.currGraph) {
                 try {
-                    globalApplicationState.currGraph.updateChart(globalApplicationState.selectedStates);
+                    globalApplicationState.currGraph.updateChart(
+                        globalApplicationState.selectedStates,
+                        globalApplicationState.selectedYear
+                    );
                 } catch (error) {
                     console.error("Error while updating the chart:", error);
                 }
