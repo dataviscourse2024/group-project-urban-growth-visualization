@@ -100,6 +100,8 @@ class Map {
 
             // Define `colorScale` dynamically based on the data for the year
             colorScale = d3.scaleSequential(colorSchemes[globalApplicationState.selectedDataset]).domain([minValue, maxValue]);
+        
+            updateLegend(minValue, maxValue)
         }
 
         // Set up zoom behavior
@@ -241,6 +243,72 @@ class Map {
             zoomToSelectedStates();
         }
 
+        function updateLegend(minValue, maxValue) {
+            // Remove any existing legend
+            d3.select("#legend-container").remove();
+        
+            // Append a container for the legend at the bottom of the map-container
+            const mapContainer = d3.select("#map-container");
+            const legendContainer = mapContainer.append("div")
+                .attr("id", "legend-container")
+                .style("display", "flex")
+                .style("justify-content", "center")
+                .style("align-items", "center")
+                .style("margin-top", "10px");
+        
+            // Set legend dimensions
+            const legendWidth = 300;
+            const legendHeight = 20;
+        
+            // Append the SVG for the legend
+            const legendSvg = legendContainer.append("svg")
+                .attr("width", legendWidth)
+                .attr("height", legendHeight);
+        
+            // Create a gradient for the legend
+            const gradientId = "color-gradient";
+            const defs = legendSvg.append("defs");
+            const gradient = defs.append("linearGradient")
+                .attr("id", gradientId)
+                .attr("x1", "0%")
+                .attr("x2", "100%")
+                .attr("y1", "0%")
+                .attr("y2", "0%");
+        
+            // Add color stops based on the color scale
+            gradient.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", colorScale(minValue));
+            gradient.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", colorScale(maxValue));
+        
+            // Draw the gradient rectangle
+            legendSvg.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", legendWidth)
+                .attr("height", legendHeight)
+                .style("fill", `url(#${gradientId})`);
+        
+            // Add min and max labels below the legend
+            const labelContainer = legendContainer.append("div")
+                .style("display", "flex")
+                .style("justify-content", "space-between")
+                .style("width", `${legendWidth}px`)
+                .style("margin-top", "5px");
+        
+            labelContainer.append("div")
+                .text(minValue.toLocaleString())
+                .style("text-align", "left");
+        
+            labelContainer.append("div")
+                .text(maxValue.toLocaleString())
+                .style("text-align", "right");
+        }
+        
+        
+        
         function zoomToSelectedStates() {
             if (globalApplicationState.selectedStates.length === 0) {
                 svg.transition().duration(750).call(
