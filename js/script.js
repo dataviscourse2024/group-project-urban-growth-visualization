@@ -40,27 +40,25 @@ async function loadData() {
 
 // Initialize the application
 loadData().then((loadedData) => {
-   
     
     data = loadedData;
+    
     globalApplicationState.currData = loadedData.populationData;
     globalApplicationState.mapData = loadedData.mapData;
 
-
-
-    // Initialize the map visualization
+    // Initialize Map
     const mapVis = new Map(globalApplicationState);
     globalApplicationState.mapVis = mapVis;
     globalApplicationState.mapVis.loadMap();
 
-    const linechart = new LineChart(globalApplicationState);
+    // Initialize Line Chart
+    const lineChart = new LineChart(globalApplicationState);
+    globalApplicationState.currGraph = lineChart;
 
-
-    console.log("Visuals initialized.");
+    console.log("Application initialized.");
 }).catch((error) => {
     console.error("Failed to initialize application:", error);
 });
-
 
 
 // Event listener for dataset dropdown

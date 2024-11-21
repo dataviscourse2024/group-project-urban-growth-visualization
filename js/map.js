@@ -230,7 +230,7 @@ class Map {
             } else {
                 stateElement
                     .attr("data-selected", "true")
-                    .style("fill", "orange");
+                    .style("fill", "red")
                 globalApplicationState.selectedStates.push(stateName);
             }
 
@@ -241,10 +241,17 @@ class Map {
             document.dispatchEvent(new CustomEvent("stateSelectionChanged", { detail: eventDetail }));
 
             zoomToSelectedStates();
+
+            // Update line chart
+            if (globalApplicationState.currGraph) {
+                globalApplicationState.currGraph.updateChart(globalApplicationState.selectedStates);
+            } else {
+                console.error("currGraph is undefined. Ensure it is properly initialized.");
+            }
         }
 
         function updateLegend(minValue, maxValue) {
-            // Remove any existing legend
+            // Remove any existing legend and scroll bar
             d3.select("#legend-container").remove();
         
             // Append a container for the legend at the bottom of the map-container
@@ -252,7 +259,7 @@ class Map {
             const legendContainer = mapContainer.append("div")
                 .attr("id", "legend-container")
                 .style("display", "flex")
-                .style("justify-content", "center")
+                .style("flex-direction", "column")
                 .style("align-items", "center")
                 .style("margin-top", "10px");
         
@@ -305,8 +312,44 @@ class Map {
             labelContainer.append("div")
                 .text(maxValue.toLocaleString())
                 .style("text-align", "right");
-        }
         
+            // Add interactive scroll bar for years
+            const scrollBarContainer = legendContainer.append("div")
+                .attr("id", "scroll-bar-container")
+                .style("width", `${legendWidth}px`)
+                .style("margin-top", "10px")
+                .style("position", "relative");
+        
+            const yearRange = [2012, 2024]; // Replace with your actual year range
+        
+            const yearSlider = scrollBarContainer.append("input")
+                .attr("type", "range")
+                .attr("min", yearRange[0])
+                .attr("max", yearRange[1])
+                .attr("step", 1)
+                .attr("value", globalApplicationState.selectedYear)
+                .attr("id", "year-slider")
+                .style("width", "100%");
+        
+            // Add both 'input' and 'change' listeners
+            yearSlider.on("input change", function () {
+                const selectedYear = +this.value;
+                globalApplicationState.selectedYear = selectedYear;
+        
+                // Update map and visuals dynamically
+                updateDataForYear(selectedYear);
+                states
+                    .transition()
+                    .duration(200) // Smooth transition
+                    .attr("fill", d => {
+                        const stateName = d.properties.name;
+                        const value = valueByState[stateName]?.[selectedYear] || 0;
+                        return colorScale(value);
+                    });
+        
+                console.log(`Year updated to: ${selectedYear}`);
+            });
+        }                
         
         
         function zoomToSelectedStates() {
