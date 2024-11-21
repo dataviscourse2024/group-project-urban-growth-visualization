@@ -1,19 +1,7 @@
 class Map {
     constructor(globalApplicationState) {
-        // if (!globalApplicationState) {
-        //     console.error("Error: globalApplicationState.map is undefined.");
-        //     return;
-        // }
-
-        console.log("Initializing Map with globalApplicationState:", globalApplicationState);
-
-        //if (!Array.isArray(globalApplicationState.mapData)) {
-        //    console.error("Error: mapData is not iterable. Received:", globalApplicationState.mapData);
-        //    return;
-        //}
-
         this.globalApplicationState = globalApplicationState;
-        this.globalApplicationState.selectedStates = [];
+        // this.globalApplicationState.selectedStates = [];
     }
 
     loadMap() {
@@ -231,10 +219,6 @@ class Map {
             
                 // Add state to selectedStates
                 globalApplicationState.selectedStates.push(stateName);
-                // globalApplicationState.currGraph.updateChart(
-                //     globalApplicationState.selectedStates,
-                //     globalApplicationState.selectedYear
-                // );
             }
         
             console.log("Updated selected states:", globalApplicationState.selectedStates);
@@ -248,18 +232,12 @@ class Map {
             zoomToSelectedStates();
         
             // Update the line chart with the current state of the global application
-            if (globalApplicationState.currGraph) {
-                try {
-                    globalApplicationState.currGraph.updateChart(
-                        globalApplicationState.selectedStates,
-                        globalApplicationState.selectedYear
-                    );
-                } catch (error) {
-                    console.error("Error while updating the chart:", error);
-                }
-            } else {
-                console.error("currGraph is undefined. Ensure it is properly initialized.");
-            }
+            globalApplicationState.currGraph.updateChart(
+                globalApplicationState.selectedStates,
+                globalApplicationState.selectedYear,
+                globalApplicationState.selectedDataset
+            );
+            
         }
         
 
