@@ -1,16 +1,15 @@
+
 // Global application state
 const globalApplicationState = {
     selectedStates: [],
     selectedYear: "2012",
     selectedDataset: "population",
-    populationData: null,
-    jobData: null,
-    housepriceData: null,
-    incomeData: null,
-    mapData: null,
+    currData: null,
     mapVis: null,
-    lineChart: null,
+    currGraph: null,
 };
+
+let data;
 
 // Make the global state globally accessible
 window.globalApplicationState = globalApplicationState;
@@ -41,10 +40,10 @@ async function loadData() {
 
 // Initialize the application
 loadData().then((loadedData) => {
-    globalApplicationState.populationData = loadedData.populationData;
-    globalApplicationState.jobData = loadedData.jobData;
-    globalApplicationState.incomeData = loadedData.incomeData;
-    globalApplicationState.housepriceData = loadedData.housepriceData;
+   
+    
+    data = loadedData;
+    globalApplicationState.currData = loadedData.populationData;
     globalApplicationState.mapData = loadedData.mapData;
 
 
@@ -53,6 +52,9 @@ loadData().then((loadedData) => {
     const mapVis = new Map(globalApplicationState);
     globalApplicationState.mapVis = mapVis;
     globalApplicationState.mapVis.loadMap();
+
+    const linechart = new LineChart(globalApplicationState);
+
 
     console.log("Visuals initialized.");
 }).catch((error) => {
@@ -64,20 +66,25 @@ loadData().then((loadedData) => {
 // Event listener for dataset dropdown
 d3.select("#datasetSelect").on("change", function () {
     const selectedDataset = this.value;
+    console.log(selectedDataset);
 
     // Update the global dataurl variable based on the selected dataset
     switch (selectedDataset) {
         case "population":
             globalApplicationState.selectedDataset = "population";
+            globalApplicationState.currData = data.populationData;
             break;
         case "jobGrowth":
             globalApplicationState.selectedDataset = "jobGrowth";
+            globalApplicationState.currData = data.jobData;
             break;
         case "medianIncome":
             globalApplicationState.selectedDataset = "income";
+            globalApplicationState.currData = data.incomeData;
             break;
         case "housing":
             globalApplicationState.selectedDataset = "housing";
+            globalApplicationState.currData = data.housepriceData;
             break;
         default:
             console.error("Unknown dataset selected.");

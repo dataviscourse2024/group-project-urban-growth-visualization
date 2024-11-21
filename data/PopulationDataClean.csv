@@ -1,5 +1,4 @@
 State,Year,Value
-United States,2020,331526933
 Alabama,2020,5031864
 Alaska,2020,732964
 Arizona,2020,7186683
@@ -52,7 +51,6 @@ West Virginia,2020,1791562
 Wisconsin,2020,5896700
 Wyoming,2020,577664
 Puerto Rico,2020,3281557
-United States,2021,332048977
 Alabama,2021,5050380
 Alaska,2021,734923
 Arizona,2021,7272487
@@ -105,7 +103,6 @@ West Virginia,2021,1785249
 Wisconsin,2021,5879978
 Wyoming,2021,579548
 Puerto Rico,2021,3262693
-United States,2022,333271411
 Alabama,2022,5073903
 Alaska,2022,733276
 Arizona,2022,7365684
@@ -158,7 +155,6 @@ West Virginia,2022,1774035
 Wisconsin,2022,5890543
 Wyoming,2022,581629
 Puerto Rico,2022,3220113
-United States,2023,334914895
 Alabama,2023,5108468
 Alaska,2023,733406
 Arizona,2023,7431344
@@ -211,7 +207,6 @@ West Virginia,2023,1770071
 Wisconsin,2023,5910955
 Wyoming,2023,584057
 Puerto Rico,2023,3205691
-United States,2012,313830990
 Alabama,2012,4815588
 Alaska,2012,730443
 Arizona,2012,6554978
@@ -263,7 +258,6 @@ Washington,2012,6897058
 West Virginia,2012,1856872
 Wisconsin,2012,5719960
 Wyoming,2012,576305
-United States,2013,315993715
 Alabama,2013,4830081
 Alaska,2013,737068
 Arizona,2013,6632764
@@ -315,7 +309,6 @@ Washington,2013,6963985
 West Virginia,2013,1853914
 Wisconsin,2013,5736754
 Wyoming,2013,582122
-United States,2014,318301008
 Alabama,2014,4841799
 Alaska,2014,736283
 Arizona,2014,6730413
@@ -367,7 +360,6 @@ Washington,2014,7054655
 West Virginia,2014,1849489
 Wisconsin,2014,5751525
 Wyoming,2014,582531
-United States,2015,320635163
 Alabama,2015,4852347
 Alaska,2015,737498
 Arizona,2015,6829676
@@ -419,7 +411,6 @@ Washington,2015,7163657
 West Virginia,2015,1842050
 Wisconsin,2015,5760940
 Wyoming,2015,585613
-United States,2016,322941311
 Alabama,2016,4863525
 Alaska,2016,741456
 Arizona,2016,6941072
@@ -471,7 +462,6 @@ Washington,2016,7294771
 West Virginia,2016,1831023
 Wisconsin,2016,5772628
 Wyoming,2016,584215
-United States,2017,324985539
 Alabama,2017,4874486
 Alaska,2017,739700
 Arizona,2017,7044008
@@ -523,7 +513,6 @@ Washington,2017,7423362
 West Virginia,2017,1817004
 Wisconsin,2017,5790186
 Wyoming,2017,578931
-United States,2018,326687501
 Alabama,2018,4887681
 Alaska,2018,735139
 Arizona,2018,7158024
@@ -575,7 +564,6 @@ Washington,2018,7523869
 West Virginia,2018,1804291
 Wisconsin,2018,5807406
 Wyoming,2018,577601
-United States,2019,328239523
 Alabama,2019,4903185
 Alaska,2019,731545
 Arizona,2019,7278717
@@ -677,4 +665,3 @@ North Dakota,2024,788940
 Alaska,2024,733536
 Vermont,2024,647818
 Wyoming,2024,586485
-United States,2024,335893238

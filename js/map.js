@@ -30,25 +30,8 @@ class Map {
 
         const mapData = globalApplicationState.mapData;
 
-        let valueData;
+        let valueData = this.globalApplicationState.currData;
 
-        switch (globalApplicationState.selectedDataset) {
-            case "population":
-                valueData = globalApplicationState.populationData;
-                break;
-            case "jobGrowth":
-                valueData = globalApplicationState.jobData;
-                break;
-            case "income":
-                valueData = globalApplicationState.incomeData;
-                break;
-            case "housing":
-                value = globalApplicationState.housepriceData;
-                break;
-            default:
-                console.error("Unknown dataset selected.");
-                return;
-        }
 
         if (!mapData || !valueData) {
             console.error("Error: Map or population data is not loaded.");
@@ -83,7 +66,7 @@ class Map {
             "population": value => `Total Population: ${numberFormatter.format(value)}`,
             "jobGrowth": value => `Number of Jobs (Thousands): ${numberFormatter.format(value)}`,
             "income": value => `Median Income: $${numberFormatter.format(value.toFixed(2))}`,
-            "housing": value => `Median House Salt Price: $${numberFormatter.format(value.toFixed(2))}`
+            "housing": value => `Median House Price: $${numberFormatter.format(value.toFixed(2))}`
         }
 
         let valueByState = {};
@@ -107,8 +90,12 @@ class Map {
                 .filter(d => d.Year === year && d.State !== "United States") //Prevent the total from being the max value.
                 .map(d => +d.Value);
 
-            let minValue = d3.min(valuesForYear) || 0;
-            let maxValue = d3.max(valuesForYear) || 0; // Default to 0 if no values
+            let dataMinusUs = valueData
+                .filter(d => d.State !== "United States") //Prevent the total from being the max value.
+                .map(d => +d.Value);
+            
+            let minValue = d3.min(dataMinusUs) || 0;
+            let maxValue = d3.max(dataMinusUs) || 0; // Default to 0 if no values
 
 
             // Define `colorScale` dynamically based on the data for the year
@@ -247,7 +234,7 @@ class Map {
 
             console.log("Updated selected states:", globalApplicationState.selectedStates);
 
-            selected = globalApplicationState.selectedStates;
+            let selected = globalApplicationState.selectedStates;
             const eventDetail = { selected };
             document.dispatchEvent(new CustomEvent("stateSelectionChanged", { detail: eventDetail }));
 
