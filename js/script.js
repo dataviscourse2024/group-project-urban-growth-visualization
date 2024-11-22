@@ -9,6 +9,9 @@ const globalApplicationState = {
     currGraph: null,
 };
 
+// Debugging
+console.log("Global Application State Initialized:", globalApplicationState);
+
 let data;
 
 // Make the global state globally accessible
@@ -44,6 +47,7 @@ loadData().then((loadedData) => {
     data = loadedData;
     
     globalApplicationState.currData = loadedData.populationData;
+    console.log("Current Data Initial Load (currData):", globalApplicationState.currData);
     globalApplicationState.mapData = loadedData.mapData;
 
     // Initialize Map
@@ -71,18 +75,22 @@ d3.select("#datasetSelect").on("change", function () {
         case "population":
             globalApplicationState.selectedDataset = "population";
             globalApplicationState.currData = data.populationData;
+            console.log("Current Data (currData):", globalApplicationState.currData);
             break;
         case "jobGrowth":
             globalApplicationState.selectedDataset = "jobGrowth";
             globalApplicationState.currData = data.jobData;
+            console.log("Current Data (currData):", globalApplicationState.currData);
             break;
         case "medianIncome":
             globalApplicationState.selectedDataset = "income";
             globalApplicationState.currData = data.incomeData;
+            console.log("Current Data (currData):", globalApplicationState.currData);
             break;
         case "housing":
             globalApplicationState.selectedDataset = "housing";
             globalApplicationState.currData = data.housepriceData;
+            console.log("Current Data (currData):", globalApplicationState.currData);
             break;
         default:
             console.error("Unknown dataset selected.");

@@ -56,18 +56,18 @@ class Map {
 
         // Function to update data and color scale for the selected year
         function updateDataForYear(year) {
-            // Prepare `valueByState` for the selected year
+            // Update valueByState initialization to ensure numeric conversion
             valueByState = {};
             globalApplicationState.currData.forEach(d => {
                 if (!valueByState[d.State]) {
                     valueByState[d.State] = {};
                 }
-                valueByState[d.State][d.Year] = +d.Value; // Ensure Value is parsed as a number
+                valueByState[d.State][d.Year] = +d.Value; // Ensure numeric conversion
             });
-        
-            // Filter values for the selected year
+
+            // Update colorScale calculation
             const valuesForYear = globalApplicationState.currData
-                .filter(d => +d.Year === +year && d.State !== "United States") // Exclude aggregate values
+                .filter(d => +d.Year === +year && d.State !== "United States")
                 .map(d => +d.Value); // Ensure numeric conversion
         
             const minValue = d3.min(valuesForYear) || 0; // Handle empty arrays
@@ -221,7 +221,9 @@ class Map {
                 globalApplicationState.selectedStates.push(stateName);
             }
         
+            // Debugging
             console.log("Updated selected states:", globalApplicationState.selectedStates);
+            console.log("Current Data (currData):", globalApplicationState.currData);
         
             // Trigger stateSelectionChanged event
             document.dispatchEvent(new CustomEvent("stateSelectionChanged", {
@@ -467,6 +469,5 @@ class Map {
                     return colorScale(value);
                 });
         });
-
     }
 }            
