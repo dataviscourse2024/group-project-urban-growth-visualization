@@ -3,122 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heatmap of Datasets</title>
+    <title>Heatmap and Bubble Plot</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-               /* Center the heatmap container along the x-axis */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-
-        #heatmap {
-            display: inline-block;
-        }
-
-        .heatmap-cell {
-            stroke: #ddd;
-        }
-
-        .axis-label {
-            font-size: 12px;
-            text-anchor: middle;
-        }
-
-        .heatmap-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px;
-            border-radius: 4px;
-            pointer-events: none;
-            opacity: 0;
-        }
-         
-
-        #plot-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .dropdown-container {
-            margin-bottom: 20px;
-        }
-
-        select {
-            font-size: 14px;
-            padding: 8px;
-            margin-right: 10px;
-        }
-
-        svg {
-            display: block;
-            margin: 0 auto;
-        }
-
-        .bubble {
-            fill-opacity: 0.7;
-            stroke: #fff;
-            stroke-width: 1.5px;
-        }
-
-        .bubble:hover {
-            fill-opacity: 1;
-            cursor: pointer;
-        }
-
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px;
-            border-radius: 4px;
-            pointer-events: none;
-            opacity: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/comparisonstyle.css">
 </head>
 <body>
-    <div id="heatmap"></div>
+    <!-- Ribbon -->
+    <div class="ribbon">
+        <div>Visualization: Heatmap and Bubble Plot</div> 
+        <button onclick="switchToNewPage()">Go to Map Visualization</button>
+        <script>
+            function switchToNewPage() {
+                window.location.href = "groupproject.html"; // Replace with your target HTML file
+            }
+        </script>
+    </div>
+
+    
+
+    <!-- Heatmap Section -->
+
+    
+    <div id="line-chart"></div>
+    <div id="checkbox-container"></div>
+
     <div id="tooltip" class="heatmap-tooltip"></div>
 
-    <script src = "heatmapcells.js"></script>
+    <script src="js/comparisonlinechart.js"></script>
 
+    <!-- Bubble Plot Section -->
+    <div class="section-title">Bubble Plot</div>
     <div id="plot-container">
         <!-- Dropdowns for Year, x-axis, and y-axis selection -->
-        <div class="dropdown-container">
-            <select id="x-axis">
-                <option Value="population">Population</option>
-                <option Value="median_income">Median Income</option>
-                <option Value="housing_prices">Housing Prices</option>
-                <option Value="jobs">Jobs</option>
+        <div id="dropdown-container">
+            <label for="x-axis-select">X Axis:</label>
+            <select id="x-axis-select">
+                <option value="population">Population</option>
+                <option value="median_income">Median Income</option>
+                <option value="housing_prices">Housing Prices</option>
+                <option value="jobs">Jobs</option>
             </select>
-
-            <select id="y-axis">
-                <option Value="population">Population</option>
-                <option Value="median_income">Median Income</option>
-                <option Value="housing_prices">Housing Prices</option>
-                <option Value="jobs">Jobs</option>
+        
+            <label for="y-axis-select">Y Axis:</label>
+            <select id="y-axis-select">
+                <option value="population">Population</option>
+                <option value="median_income">Median Income</option>
+                <option value="housing_prices">Housing Prices</option>
+                <option value="jobs">Jobs</option>
             </select>
-
-            <select id="Year">
-                <!-- Years will be populated dynamically -->
-            </select>
+        </div>
         </div>
 
         <!-- The bubble plot SVG will be inserted here -->
         <svg id="bubble-plot"></svg>
+        <div id="slider-container">
+            <label for="year-slider">Select Year:</label>
+            <input type="range" id="year-slider" min="2012" max="2024" step="1" value="2012">
+            <span id="year-display">2012</span>
+        </div>
+            <script src="js/bubblechart.js"></script>
+        <svg id="heatmap-plot"></svg>
+        <script src="js/heatmap.js"></script>
+        
     </div>
 
     <div id="tooltip" class="tooltip"></div>
-    <script src = bubblechart.js></script>
 
 </body>
 </html>

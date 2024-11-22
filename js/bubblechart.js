@@ -1,3 +1,5 @@
+// bubblechart.js - Implementation for dynamically updating axis labels
+
 Promise.all([
     d3.csv("data/PopulationDataClean.csv"),
     d3.csv("data/MedianIncomeDataClean.csv"),
@@ -16,7 +18,8 @@ Promise.all([
 
     const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(States);
 
-    const margin = { top: 50, right: 30, bottom: 50, left: 60 };
+    // Set up SVG container
+    const margin = { top: 50, right: 30, bottom: 50, left: 80 };
     const width = 800 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
@@ -28,13 +31,7 @@ Promise.all([
 
     const tooltip = d3.select("#tooltip");
 
-    // Populate Year dropdown
-    const YearSelect = d3.select("#Year");
-    Years.forEach(Year => {
-        YearSelect.append("option").attr("value", Year).text(Year);
-    });
-
-    // Calculate global domains for each dataset
+    // Initialize scales and domains
     const globalDomains = {};
     for (const key in datasets) {
         globalDomains[key] = {
@@ -44,25 +41,39 @@ Promise.all([
         };
     }
 
-    // Default selections
-    let selectedYear = Years[0];
-    let selectedXAxis = "population";
-    let selectedYAxis = "population";
+    // Set up slider control
+    const yearSlider = d3.select("#year-slider");
+    const yearDisplay = d3.select("#year-display");
 
-    // Dropdown event listeners
-    d3.select("#x-axis").on("change", updatePlot);
-    d3.select("#y-axis").on("change", updatePlot);
-    d3.select("#Year").on("change", updatePlot);
+    // Variables to store the selected axis labels
+    let selectedXAxis = d3.select("#x-axis-select").property("value");
+    let selectedYAxis = d3.select("#y-axis-select").property("value");
 
-    updatePlot();
+    // Event listeners for dropdowns
+    d3.select("#x-axis-select").on("change", () => {
+        selectedXAxis = d3.select("#x-axis-select").property("value");
+        updatePlot(yearSlider.property("value"));
+    });
+    d3.select("#y-axis-select").on("change", () => {
+        selectedYAxis = d3.select("#y-axis-select").property("value");
+        updatePlot(yearSlider.property("value"));
+    });
 
-    function updatePlot() {
-        selectedYear = YearSelect.property("value");
-        selectedXAxis = d3.select("#x-axis").property("value");
-        selectedYAxis = d3.select("#y-axis").property("value");
+    // Event listener for slider control
+    yearSlider.on("input", function () {
+        const selectedYear = this.value;
+        yearDisplay.text(selectedYear); // Update year display text
+        updatePlot(selectedYear); // Update plot with the new year
+    });
+
+    function updatePlot(year) {
+        const selectedYear = year;
 
         const xDataset = datasets[selectedXAxis];
         const yDataset = datasets[selectedYAxis];
+
+        // Normalize the values for the selected datasets
+        const normalize = (value, domain) => (value - domain[0]) / (domain[1] - domain[0]);
 
         // Filter data for the selected Year
         const filteredData = States.map(State => {
@@ -72,14 +83,14 @@ Promise.all([
                 State: State,
                 xValue: xData ? +xData.Value : null,
                 yValue: yData ? +yData.Value : null,
-                size: xData ? +xData.Value : null // Use xValue for size, modify as needed
+                size: xData && yData ? (normalize(+xData.Value, globalDomains[selectedXAxis].x) + normalize(+yData.Value, globalDomains[selectedYAxis].y)) / 2 : null
             };
         }).filter(d => d.xValue !== null && d.yValue !== null);
 
         // Use fixed domains for the selected datasets
         const xDomain = globalDomains[selectedXAxis].x;
         const yDomain = globalDomains[selectedYAxis].y;
-        const sizeDomain = globalDomains[selectedXAxis].size;
+        const sizeDomain = d3.extent(filteredData, d => d.size);
 
         const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
         const yScale = d3.scaleLinear().domain(yDomain).range([height, 0]);
@@ -94,13 +105,21 @@ Promise.all([
         // Enter phase
         const newBubbles = bubbles.enter().append("circle")
             .attr("class", "bubble")
-            .attr("cx", width / 2)  // Start at center
+            .attr("cx", width / 2)
             .attr("cy", height / 2)
             .attr("r", 0)
             .style("fill", d => colorScale(d.State))
             .on("mouseover", function (event, d) {
                 tooltip.transition().duration(200).style("opacity", .9);
-                tooltip.html(`${d.State}<br>${selectedXAxis}: ${d.xValue}<br>${selectedYAxis}: ${d.yValue}`)
+                let xValueFormatted = d3.format(",.0f")(d.xValue);
+                let yValueFormatted = d3.format(",.0f")(d.yValue);
+                if (selectedXAxis === 'median_income' || selectedXAxis === 'housing_prices') {
+                    xValueFormatted = `$${xValueFormatted}`;
+                }
+                if (selectedYAxis === 'median_income' || selectedYAxis === 'housing_prices') {
+                    yValueFormatted = `$${yValueFormatted}`;
+                }
+                tooltip.html(`${d.State}<br>${selectedXAxis.replace('_', ' ')}: ${xValueFormatted}<br>${selectedYAxis.replace('_', ' ')}: ${yValueFormatted}`)
                     .style("left", `${event.pageX + 5}px`)
                     .style("top", `${event.pageY - 28}px`);
             })
@@ -123,10 +142,30 @@ Promise.all([
         svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(xScale));
+            .call(d3.axisBottom(xScale))
+            .append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", margin.bottom - 10)
+            .attr("fill", "black")
+            .style("text-anchor", "middle")
+            .text(selectedXAxis.replace('_', ' ')); // Update x-axis label dynamically
 
         svg.append("g")
             .attr("class", "y-axis")
-            .call(d3.axisLeft(yScale));
+            .call(d3.axisLeft(yScale))
+            .append("text")
+            .attr("class", "axis-label")
+            .attr("x", -margin.left - 100) // Move label more to the left to avoid overlap
+            .attr("y", -margin.top - 15)
+            .attr("transform", "rotate(-90)")
+            .attr("fill", "black")
+            .style("text-anchor", "middle")
+            .text(selectedYAxis.replace('_', ' ')); // Update y-axis label dynamically
     }
+
+    // Initial plot
+    updatePlot(yearSlider.property("value"));
 });
+
+
