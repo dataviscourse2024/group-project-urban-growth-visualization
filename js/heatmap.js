@@ -1,5 +1,3 @@
-// heatmap.js - Implementation for heatmap visualization
-
 Promise.all([
     d3.csv("data/PopulationDataClean.csv"),
     d3.csv("data/MedianIncomeDataClean.csv"),
@@ -28,6 +26,12 @@ Promise.all([
 
     // Create a matrix of correlations for the heatmap
     const metrics = Object.keys(datasets);
+    const axisLabels = {
+        'housing_prices': 'Housing Prices',
+        'median_income': 'Median Income',
+        'population': 'Population',
+        'jobs': 'Jobs'
+    };
     const correlationData = [];
 
     metrics.forEach((metricX, i) => {
@@ -74,7 +78,7 @@ Promise.all([
         .style("stroke", "white")
         .on("mouseover", function (event, d) {
             d3.select("#tooltip").transition().duration(200).style("opacity", .9);
-            d3.select("#tooltip").html(`${d.metricX} vs ${d.metricY}<br>Correlation: ${d3.format(".2f")(d.correlation)}`)
+            d3.select("#tooltip").html(`${axisLabels[d.metricX]} vs ${axisLabels[d.metricY]}<br>Correlation: ${d3.format(".2f")(d.correlation)}`)
                 .style("left", `${event.pageX + 5}px`)
                 .style("top", `${event.pageY - 28}px`);
         })
@@ -86,14 +90,14 @@ Promise.all([
     heatmapSvg.append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0,${heatmapHeight})`)
-        .call(d3.axisBottom(xScale))
-        .selectAll("text")
-        .style("text-anchor", "end")
-        .attr("dx", "-0.8em")
-        .attr("dy", "-0.15em")
-        .attr("transform", "rotate(-65)");
+        .call(d3.axisBottom(xScale).tickFormat(d => axisLabels[d] || d))
+        .selectAll("text");
+
 
     heatmapSvg.append("g")
         .attr("class", "y-axis")
-        .call(d3.axisLeft(yScale));
+        .call(d3.axisLeft(yScale).tickFormat(d => axisLabels[d] || d));
+}).catch(function(error) {
+    console.error('Error loading data:', error);
 });
+

@@ -26,34 +26,39 @@
         </script>
     </div>
 
+    <div class = "content-container">
     <!-- Dropdown for dataset selection -->
-    <div class="dropdown-container">
-        <label for="datasetSelect">Dataset:</label>
-        <select id="datasetSelect">
-            <option value="population">Population</option>
-            <option value="jobGrowth">Job Growth</option>
-            <option value="medianIncome">Median Income</option>
-            <option value="housing">Housing Price</option>
-        </select>
-        <div id="scroll-bar-container">
-            <label for="year-slider">Select Year:</label>
-            <input type="range" id="year-slider" min="2012" max="2024" step="1" value="2012">
-            <span id="year-display">2012</span>
+    <div class="vis-container">
+        <!-- Main layout container -->
+        <div id="map-container">
+            <div class="dropdown-container">
+                <label for="datasetSelect">Dataset:</label>
+                <select id="datasetSelect">
+                    <option value="population">Population</option>
+                    <option value="jobGrowth">Job Growth</option>
+                    <option value="medianIncome">Median Income</option>
+                    <option value="housing">Housing Price</option>
+                </select>
+                <div id="scroll-bar-container">
+                    <label for="year-slider">Select Year:</label>
+                    <input type="range" id="year-slider" min="2012" max="2024" step="1" value="2012">
+                    <span id="year-display">2012</span>
+                </div>
+
+            </div>
+            <div id="us-map-svg"></div>
+            <div id="legend-container"></div> <!-- Legend is now above -->
+
+            <div id="dynamic-text-container">
+                <p id="dynamic-text">Select a state to see percentage changes.</p>
+            </div>
         </div>
-        
-    </div>
+        <div id="dynamic-text-container">
+            <p id="text-description">Select a state to see percentage changes.</p>
+        </div>
 
-
-    <!-- Main layout container -->
-    <div id="map-container">
-        <div id="legend-container"></div> <!-- Legend is now above -->
-        <div id="us-map-svg"></div>
+        </div>
     </div>
-    
-    <div id="dynamic-text-container">
-        <p id="dynamic-text">Select a state to see percentage changes.</p>
-    </div>
-    
 
     <!-- Tooltip for map interaction -->
     <div class="tooltip" id="tooltip"></div>

@@ -2,6 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #e7e7e7;
 }
 
 h1 {
@@ -32,7 +33,7 @@ h1 {
 
 .ribbon {
     width: 100%;
-    background-color: #444444;
+    background-color: rgb(39, 39, 39);
     color: white;
     text-align: center;
     padding: 10px;
@@ -48,8 +49,11 @@ h1 {
   align-items: center; /* Center the content horizontally */
   justify-content: flex-start;
   width: 100%;
-  margin: 0 auto;
+  margin: 14px auto;
+  margin-left: 14px;
   padding: 10px;
+  background-color: #c3f3ff;
+  border-radius: 15px;
 }
 
 #legend-container {
@@ -59,6 +63,7 @@ h1 {
   justify-content: center;
   margin-top: 20px; /* Space between map and legend */
   color: #444444;
+  background-color: #ffffff;
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow for clarity */
@@ -119,12 +124,13 @@ h1 {
 
 
 #dynamic-text-container {
-  width: 100%;
-  text-align: center;
-  margin-top: 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #444;
+  width: 50%;
+  margin-left: 20px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  align-self: center;
 }
 
 
@@ -212,4 +218,12 @@ button:focus {
   outline: none; /* Remove default focus outline */
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.4); /* Add a glowing effect on focus */
 }
+
+.vis-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
 
