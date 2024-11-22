@@ -169,14 +169,14 @@ class Map {
         // Draw inner borders (borders between states)
         g.append("path")
             .attr("fill", "none")
-            .attr("stroke", "white")  // Black color for inner borders
+            .attr("stroke", "black")  // Black color for inner borders
             .attr("stroke-width", 0.5)  // Thin line for inner borders
             .attr("d", path(topojson.mesh(mapData, mapData.objects.states, (a, b) => a !== b))); // Only inner borders
 
         // Draw outer borders (entire map border)
         g.append("path")
             .attr("fill", "none")
-            .attr("stroke", "white")  // Black color for outer borders
+            .attr("stroke", "black")  // Black color for outer borders
             .attr("stroke-width", 0.5)  // Thin line for outer borders
             .attr("d", path(topojson.mesh(mapData, mapData.objects.states, (a, b) => a === b))); // Outer borders
 
