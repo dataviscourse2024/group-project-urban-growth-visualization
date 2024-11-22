@@ -12,8 +12,16 @@ h1 {
 .dropdown-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 20px;
+  gap: 10px; /* Add spacing between dropdown and slider */
 }
+
+#year-slider {
+  width: 200px; /* Adjust the slider width */
+  margin-left: 10px; /* Add spacing between label and slider */
+}
+
 
 #main-container {
   display: flex;
@@ -22,60 +30,107 @@ h1 {
   margin: 20px;
 }
 
+.ribbon {
+    width: 100%;
+    background-color: #444444;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 #map-container {
-  position: relative; /* Enable relative positioning for contained elements */
+  position: relative;
   display: flex;
-  flex-direction: column; /* Stack children vertically */
-  align-items: center;
-  height: 100%; /* Ensure container height is respected */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center the content horizontally */
+  justify-content: flex-start;
+  width: 100%;
+  margin: 0 auto;
   padding: 10px;
 }
 
 #legend-container {
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: auto; /* Push to the bottom of the container */
-  background-color: rgba(255, 255, 255, 0.8); /* Optional: transparent background for better visibility */
-  padding: 5px;
+  margin-top: 20px; /* Space between map and legend */
+  color: #444444;
+  padding: 15px;
   border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  pointer-events: none; /* Prevent legend from blocking map interactions */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow for clarity */
 }
 
+#scroll-bar-container {
+  display: flex;
+  align-items: center; /* Vertically align slider and label */
+  justify-content: flex-start; /* Align items horizontally from left to right */
+  gap: 10px; /* Add spacing between the label and the slider */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+
 #scroll-bar-container input[type="range"] {
-  -webkit-appearance: none;
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none;
   width: 100%;
-  height: 8px;
-  background: #ddd;
+  height: 10px; /* Slightly thicker for better usability */
+  background: linear-gradient(to right, #cccccc, #666666); /* Neutral gradient */
+  border-radius: 5px; /* Rounded corners */
   outline: none;
-  border-radius: 5px;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 #scroll-bar-container input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
+  -webkit-appearance: none; /* Remove default styling */
   appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #666;
-  border-radius: 50%;
+  width: 20px; /* Thumb size */
+  height: 20px;
+  background: radial-gradient(circle, #ffffff 40%, #aaaaaa 70%); /* Radial gradient for a 3D effect */
+  border: 2px solid #666666; /* Subtle border for contrast */
+  border-radius: 50%; /* Make it circular */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Glow effect */
   cursor: pointer;
+  transition: transform 0.2s ease; /* Add animation for interactivity */
+}
+
+#scroll-bar-container input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2); /* Slightly enlarge on hover */
 }
 
 #scroll-bar-container input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  background: #666;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #ffffff 40%, #aaaaaa 70%);
+  border: 2px solid #666666;
   border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-#us-map-svg {
+#scroll-bar-container input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+
+#dynamic-text-container {
   width: 100%;
-  height: 100%;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #444;
+}
+
+
+#us-map-svg {
+  margin: 0 auto;
+  display: block;
 }
 
 #line-chart {
@@ -93,3 +148,68 @@ h1 {
   display: none;
   pointer-events: none;
 }
+
+#datasetSelect {
+  -webkit-appearance: none; /* Remove default styling */
+  appearance: none;
+  width: 200px; /* Set width for consistency */
+  padding: 10px; /* Add padding for a more spacious look */
+  font-size: 16px; /* Adjust font size for readability */
+  color: #333333; /* Neutral text color */
+  background: white;
+  color: #444444;
+  border: 2px solid #666666; /* Border for contrast */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  cursor: pointer;
+  transition: all 0.2s ease; /* Smooth transition for hover effect */
+}
+
+#datasetSelect:hover {
+  background: #444444;
+  border-color: #333333; /* Darken the border on hover */
+  color: white;
+}
+
+#datasetSelect:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4); /* Glow effect when focused */
+}
+
+#datasetSelect option {
+  color: white; /* Neutral text color for options */
+  background: #444444; /* Ensure options have a clean background */
+  font-size: 16px;
+}
+
+button {
+  background-color: white;
+  color: #333333; /* Neutral text color */
+  font-size: 14px; /* Adjust font size for readability */
+  font-weight: bold; /* Make the text stand out */
+  padding: 5px 15px; /* Add padding for a spacious feel */
+  border: 2px solid #666666; /* Border for contrast */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  cursor: pointer; /* Pointer cursor for interactivity */
+  transition: all 0.3s ease; /* Smooth transition for hover and focus effects */
+}
+
+button:hover {
+  background-color: #444444;
+  color: white;
+  border-color: #333333; /* Darken border on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhance shadow for a lifted effect */
+}
+
+button:active {
+  background: #444444;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow for pressed effect */
+  transform: translateY(0); /* Reset lift on active */
+}
+
+button:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4); /* Add a glowing effect on focus */
+}
+

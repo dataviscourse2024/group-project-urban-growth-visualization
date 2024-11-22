@@ -1,3 +1,4 @@
+(function () {
 class Map {
     constructor(globalApplicationState) {
         this.globalApplicationState = globalApplicationState;
@@ -120,7 +121,7 @@ class Map {
                         .interrupt()
                         .transition()
                         .duration(200)
-                        .style("fill", "gray");
+                        .style("fill", "#444444");
                 }
 
                 const stateName = d.properties.name;
@@ -168,14 +169,14 @@ class Map {
         // Draw inner borders (borders between states)
         g.append("path")
             .attr("fill", "none")
-            .attr("stroke", "black")  // Black color for inner borders
+            .attr("stroke", "white")  // Black color for inner borders
             .attr("stroke-width", 0.5)  // Thin line for inner borders
             .attr("d", path(topojson.mesh(mapData, mapData.objects.states, (a, b) => a !== b))); // Only inner borders
 
         // Draw outer borders (entire map border)
         g.append("path")
             .attr("fill", "none")
-            .attr("stroke", "black")  // Black color for outer borders
+            .attr("stroke", "white")  // Black color for outer borders
             .attr("stroke-width", 0.5)  // Thin line for outer borders
             .attr("d", path(topojson.mesh(mapData, mapData.objects.states, (a, b) => a === b))); // Outer borders
 
@@ -221,25 +222,47 @@ class Map {
                 globalApplicationState.selectedStates.push(stateName);
             }
         
-            // Debugging
-            console.log("Updated selected states:", globalApplicationState.selectedStates);
-            console.log("Current Data (currData):", globalApplicationState.currData);
-        
-            // Trigger stateSelectionChanged event
-            document.dispatchEvent(new CustomEvent("stateSelectionChanged", {
-                detail: { selectedStates: globalApplicationState.selectedStates }
-            }));
-        
+            // Calculate percentage change for selected states
+             updateDynamicText();
+
             // Zoom to selected states
-            zoomToSelectedStates();
+            zoomToSelectedStates();            
+        }
+
+        function updateDynamicText() {
+            const selectedStates = globalApplicationState.selectedStates;
+            const currData = globalApplicationState.currData;
+            const datasetName = globalApplicationState.selectedDataset;
         
-            // Update the line chart with the current state of the global application
-            globalApplicationState.currGraph.updateChart(
-                globalApplicationState.selectedStates,
-                globalApplicationState.selectedYear,
-                globalApplicationState.selectedDataset
-            );
-            
+            // Mapping dataset values to lowercase display names
+            const datasetDisplayNames = {
+                population: "population",
+                jobGrowth: "job growth",
+                medianIncome: "median income",
+                housing: "housing price"
+            };
+        
+            if (selectedStates.length === 0) {
+                d3.select("#dynamic-text").text("Select a state to see percentage changes.");
+                return;
+            }
+        
+            let textUpdates = selectedStates.map(state => {
+                const dataForState = currData.filter(d => d.State === state);
+                const value2012 = dataForState.find(d => +d.Year === 2012)?.Value || 0;
+                const value2024 = dataForState.find(d => +d.Year === 2024)?.Value || 0;
+        
+                if (value2012 === 0) {
+                    return `${state}: Data unavailable for 2012.`;
+                }
+        
+                const percentageChange = ((value2024 - value2012) / value2012 * 100).toFixed(2);
+                const changeDirection = percentageChange > 0 ? "increased" : "decreased";
+        
+                return `${state} has ${changeDirection} in ${datasetName} by ${Math.abs(percentageChange)}% from 2012 to 2024.`;
+            });
+        
+            d3.select("#dynamic-text").html(textUpdates.join("<br>"));
         }
         
 
@@ -249,12 +272,12 @@ class Map {
         
             // Append a container for the legend at the bottom of the map-container
             const mapContainer = d3.select("#map-container");
-            const legendContainer = mapContainer.append("div")
+            const legendContainer = mapContainer.append("div") // Append at the bottom
                 .attr("id", "legend-container")
                 .style("display", "flex")
                 .style("flex-direction", "column")
                 .style("align-items", "center")
-                .style("margin-top", "10px");
+                .style("margin-top", "20px"); // Add spacing between map and legend
         
             // Add a dynamic label above the legend
             const dynamicLabel = legendContainer.append("div")
@@ -263,7 +286,7 @@ class Map {
                 .style("font-size", "18px")
                 .style("font-weight", "bold")
                 .text(""); // Placeholder for now
-
+        
             // Set legend dimensions
             const legendWidth = 200;
             const legendHeight = 20;
@@ -313,61 +336,11 @@ class Map {
             labelContainer.append("div")
                 .text(maxValue.toLocaleString())
                 .style("text-align", "right");
-
+        
             // Update the dynamic label text based on the dataset and year
             updateDynamicLabel();
+        }
         
-            d3.select("#scroll-bar-container").remove();
-            
-            // Add Scroll Bar for Year Selection
-            const scrollBarContainer = d3.select("#map-container")
-                .append("div")
-                .attr("id", "scroll-bar-container")
-                .style("margin-top", "20px")
-                .style("display", "flex")
-                .style("justify-content", "center");
-        
-            const yearRange = [2012, 2024]; // Replace with your actual year range
-        
-            scrollBarContainer.append("input")
-            .attr("type", "range")
-            .attr("min", yearRange[0])
-            .attr("max", yearRange[1])
-            .attr("step", 1) // Keep step at 1 for discrete year intervals
-            .attr("value", globalApplicationState.selectedYear)
-            .attr("id", "year-slider")
-            .style("width", "100%")
-            .on("input", function () {
-                // Continuous feedback while dragging
-                const rawValue = +this.value; // Get the slider's raw value
-                globalApplicationState.selectedYear = Math.round(rawValue); // Snap to the nearest year
-    
-                // Update the dynamic label text in real-time
-                updateDynamicLabel();
-    
-                // Provide live feedback to the map
-                updateMapDuringDrag(rawValue);
-            })
-            .on("change", function () {
-                // Final update when dragging stops
-                const rawValue = +this.value;
-                const selectedYear = Math.round(rawValue); // Snap to nearest year
-                globalApplicationState.selectedYear = selectedYear;
-    
-                // Update map data and re-render states
-                updateDataForYear(selectedYear);
-                states
-                    .transition()
-                    .duration(300)
-                    .attr("fill", d => {
-                        const stateName = d.properties.name;
-                        const value = valueByState[stateName]?.[selectedYear] || 0;
-                        return colorScale(value);
-                    });
-    
-                console.log(`Year updated to: ${selectedYear}`);
-            });
-        }                
         
         function updateDynamicLabel() {
             const year = globalApplicationState.selectedYear;
@@ -375,10 +348,10 @@ class Map {
         
             // Tooltip text for datasets
             const displayFormats = {
-                "population": `Total Population in ${year}`,
-                "jobGrowth": `Job Growth (Thousands) in ${year}`,
-                "income": `Median Income in ${year}`,
-                "housing": `Median Housing Price in ${year}`
+                "population": `Total Population`,
+                "jobGrowth": `Job Growth (Thousands)`,
+                "income": `Median Income`,
+                "housing": `Median Housing Price`
             };
         
             const labelText = displayFormats[dataset] || `Data for ${year}`;
@@ -387,7 +360,6 @@ class Map {
 
         function updateMapDuringDrag(rawValue) {
             const nearestYear = Math.round(rawValue); // Snap to the nearest year
-            console.log(`Dragging year: ${rawValue}, Nearest year: ${nearestYear}`);
         
             // Update map with temporary interpolated values
             states
@@ -470,4 +442,6 @@ class Map {
                 });
         });
     }
-}            
+}
+window.Map = Map;
+})();            

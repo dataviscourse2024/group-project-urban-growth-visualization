@@ -15,10 +15,18 @@
     <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
-    <!-- Title -->
-    <h1>Interactive US Urban Growth Map</h1>
+    <!-- Ribbon -->
+    <div class="ribbon">
+        <div>Interactive US Urban Growth Map</div>
+        <button onclick="switchToNewPage()">Go to Comparisons</button>
+        <script>
+            function switchToNewPage() {
+                window.location.href = "comparisons.html"; // Replace with your target HTML file
+            }
+        </script>
+    </div>
 
-    <!-- Dropdowns for dataset and year selection -->
+    <!-- Dropdown for dataset selection -->
     <div class="dropdown-container">
         <label for="datasetSelect">Dataset:</label>
         <select id="datasetSelect">
@@ -27,35 +35,24 @@
             <option value="medianIncome">Median Income</option>
             <option value="housing">Housing Price</option>
         </select>
-
-        <label for="yearSelect">Year:</label>
-        <select id="yearSelect">
-            <option value="2012">2012</option>
-            <option value="2013">2013</option>
-            <option value="2014">2014</option>
-            <option value="2015">2015</option>
-            <option value="2016">2016</option>
-            <option value="2017">2017</option>
-            <option value="2018">2018</option>
-            <option value="2019">2019</option>
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-        </select>
+        <div id="scroll-bar-container">
+            <label for="year-slider">Select Year:</label>
+            <input type="range" id="year-slider" min="2012" max="2024" step="1" value="2012">
+            <span id="year-display">2012</span>
+        </div>
+        
     </div>
+
 
     <!-- Main layout container -->
-    <div id="main-container">
-        <div id="map-container" style="width: 60%;">
-            <div id="us-map-svg"></div>
-        </div>
-        <div id="line-chart-container" style="width: 40%; height: 610px;">
-            <svg id="line-chart"></svg>
-        </div>
+    <div id="map-container">
+        <div id="legend-container"></div> <!-- Legend is now above -->
+        <div id="us-map-svg"></div>
     </div>
     
+    <div id="dynamic-text-container">
+        <p id="dynamic-text">Select a state to see percentage changes.</p>
+    </div>
     
 
     <!-- Tooltip for map interaction -->
@@ -63,7 +60,6 @@
 
     <!-- JavaScript files -->
     <script src="js/script.js"></script>  
-    <script src="js/line-chart.js"></script>  
     <script src="js/map.js"></script>
 </body>
 </html>
