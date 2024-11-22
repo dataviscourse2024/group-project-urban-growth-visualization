@@ -19,22 +19,14 @@
         </script>
     </div>
 
-    
-
-    <!-- Heatmap Section -->
-
-    
-    <div id="line-chart"></div>
-    <div id="checkbox-container"></div>
-
-    <div id="tooltip" class="heatmap-tooltip"></div>
-
-    <script src="js/comparisonlinechart.js"></script>
-
-    <!-- Bubble Plot Section -->
-    <div class="section-title">Bubble Plot</div>
+    <!-- Plot Container -->
     <div id="plot-container">
-        <!-- Dropdowns for Year, x-axis, and y-axis selection -->
+        <!-- Line Chart Section (Comparison Chart) -->
+        <div id="line-chart"></div>
+        <div id="checkbox-container"></div>
+
+        <!-- Bubble Plot Section -->
+        <div class="section-title">Bubble Plot</div>
         <div id="dropdown-container">
             <label for="x-axis-select">X Axis:</label>
             <select id="x-axis-select">
@@ -52,22 +44,21 @@
                 <option value="jobs">Jobs</option>
             </select>
         </div>
-        </div>
-
-        <!-- The bubble plot SVG will be inserted here -->
         <svg id="bubble-plot"></svg>
         <div id="slider-container">
             <label for="year-slider">Select Year:</label>
             <input type="range" id="year-slider" min="2012" max="2024" step="1" value="2012">
             <span id="year-display">2012</span>
         </div>
-            <script src="js/bubblechart.js"></script>
+
+        <!-- Heatmap Section -->
         <svg id="heatmap-plot"></svg>
-        <script src="js/heatmap.js"></script>
-        
     </div>
 
     <div id="tooltip" class="tooltip"></div>
 
+    <script src="js/comparisonlinechart.js"></script>
+    <script src="js/bubblechart.js"></script>
+    <script src="js/heatmap.js"></script>
 </body>
 </html>
