@@ -2,97 +2,97 @@ class LineChart {
     constructor(globalApplicationState) {
         this.globalApplicationState = globalApplicationState;
 
-        // Define chart dimensions and margins
-        this.margin = { top: 20, right: 30, bottom: 30, left: 40 };
-        this.width = 800 - this.margin.left - this.margin.right;
-        this.height = 400 - this.margin.top - this.margin.bottom;
-
+        // Create the SVG container
         this.svg = d3.select("#line-chart")
-            .attr("width", this.width + this.margin.left + this.margin.right)
-            .attr("height", this.height + this.margin.top + this.margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
+            .append("svg")
+            .attr("width", 800) // Set your desired width
+            .attr("height", 400) // Set your desired height
+            .attr("viewBox", [0, 0, 800, 400]);
 
-        this.initializeAxes();
+        // Margins for axes
+        this.margin = { top: 20, right: 30, bottom: 50, left: 50 };
+        this.innerWidth = 800 - this.margin.left - this.margin.right;
+        this.innerHeight = 400 - this.margin.top - this.margin.bottom;
+
+        // Append a group element for the chart contents
+        this.chartGroup = this.svg.append("g")
+            .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+
+        // Add groups for axes
+        this.xAxisGroup = this.chartGroup.append("g")
+            .attr("transform", `translate(0, ${this.innerHeight})`);
+
+        this.yAxisGroup = this.chartGroup.append("g");
+
+        // Initialize scales
+        this.xScale = d3.scaleLinear().range([0, this.innerWidth]);
+        this.yScale = d3.scaleLinear().range([this.innerHeight, 0]);
+
+        // Add labels
+        this.svg.append("text")
+            .attr("x", this.margin.left + this.innerWidth / 2)
+            .attr("y", 390) // Adjust based on your SVG height
+            .style("text-anchor", "middle")
+            .text("Year");
+
+        this.svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -(this.margin.top + this.innerHeight / 2))
+            .attr("y", 20) // Adjust based on your margins
+            .style("text-anchor", "middle")
+            .text("Value");
 
         console.log("LineChart initialized with globalApplicationState:", this.globalApplicationState);
+        console.log("SVG Element:", this.svg);
     }
 
-    initializeAxes() {
-        // Initialize scales
-        this.xScale = d3.scaleLinear().range([0, this.width]);
-        this.yScale = d3.scaleLinear().range([this.height, 0]);
-
-        // Append x-axis
-        this.xAxis = this.svg.append("g")
-            .attr("class", "x-axis")
-            .attr("transform", `translate(0,${this.height})`);
-
-        // Append y-axis
-        this.yAxis = this.svg.append("g")
-            .attr("class", "y-axis");
-    }
-
-    updateChart(selectedStates, selectedYear, selectedDataset) {
-        console.log(`updateChart called with selectedStates: ${selectedStates}, selectedYear: ${selectedYear}, and selectedDataset: ${selectedDataset}`);
+    /**
+     * Update chart data
+     * @param {Array} selectedStates - Array of selected state names
+     * @param {string} selectedYear - Selected year
+     * @param {Array} currData - Current dataset
+     */
+    updateChart(selectedStates, selectedYear, currData) {
+        if (!currData) return;
     
-        if (!selectedStates || selectedStates.length === 0) {
-            console.log("LineChart: No states selected. Clearing the line chart.");
-            this.clearChart();
-            return;
-        }
+        // Check if selectedStates is empty
+        const statesToDisplay = selectedStates.length > 0
+            ? selectedStates
+            : [...new Set(currData.map(d => d.State))]; // Include all states if none are selected
     
-        // Use the data passed to the function to filter relevant entries
-        const filteredData = data[`${selectedDataset}Data`].filter(d =>
-            selectedStates.includes(d.State) &&
-            d.Year === selectedYear
+        // Filter the data based on selected states and year
+        const filteredData = currData.filter(d =>
+            statesToDisplay.includes(d.State) && +d.Year <= +selectedYear
         );
     
-        console.log("Filtered data:", filteredData);
+        const parsedData = filteredData.map(d => ({
+            State: d.State,
+            Year: +d.Year, // Ensure numeric
+            Value: +d.Value // Ensure numeric
+        }));
     
-        if (filteredData.length === 0) {
-            console.log("LineChart: No data available to update the chart.");
-            this.clearChart();
-            return;
-        }
+        console.log("Filtered and parsed data for chart:", parsedData);
     
-        // Call renderChart to update the visualization
-        this.renderChart(filteredData);
-    }
-
-    renderChart(data) {
-        console.log("Rendering chart with data:", data);
-
-        // Extract x and y values for scales
-        const xValues = data.map(d => d.Year);
-        const yValues = data.map(d => d.Value);
-
-        this.xScale.domain(d3.extent(xValues));
-        this.yScale.domain([0, d3.max(yValues)]);
-
-        // Update axes
-        this.xAxis.transition().duration(500).call(d3.axisBottom(this.xScale).tickFormat(d3.format("d")));
-        this.yAxis.transition().duration(500).call(d3.axisLeft(this.yScale));
-
-        // Bind data
+        // Update scales and redraw axes
+        this.xScale.domain(d3.extent(parsedData, d => d.Year));
+        this.yScale.domain([0, d3.max(parsedData, d => d.Value)]);
+    
+        this.xAxisGroup.call(d3.axisBottom(this.xScale));
+        this.yAxisGroup.call(d3.axisLeft(this.yScale));
+    
+        // Draw the line(s)
         const line = d3.line()
             .x(d => this.xScale(d.Year))
             .y(d => this.yScale(d.Value));
-
-        this.svg.selectAll(".line").remove(); // Clear previous line
-
-        this.svg.append("path")
-            .datum(data)
+    
+        const states = d3.group(parsedData, d => d.State);
+    
+        this.svg.selectAll(".line")
+            .data(states)
+            .join("path")
             .attr("class", "line")
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 1.5)
-            .attr("d", line);
-    }
-
-    clearChart() {
-        console.log("LineChart cleared.");
-        this.svg.selectAll("*").remove(); // Clear the line chart
-        this.initializeAxes(); // Re-initialize axes to keep the structure
-    }
+            .attr("d", ([, values]) => line(values))
+            .style("stroke", "steelblue")
+            .style("fill", "none");
+    }    
 }
