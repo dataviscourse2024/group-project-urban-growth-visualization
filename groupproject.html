@@ -24,11 +24,22 @@
                 window.location.href = "comparisons.html"; // Replace with your target HTML file
             }
         </script>
+        <a href="https://youtu.be/VeeJf4gAHz0" target="_blank" class="youtube-button">Watch Screencast</a>
+
     </div>
 
     <div class = "content-container">
+
+
     <!-- Dropdown for dataset selection -->
     <div class="vis-container">
+        <div class = text-description>
+            <p>
+                Over the past decade, the United States has seen steady increases in population, job opportunities, and median income. 
+                However, these trends are dwarfed by the explosive rise in housing prices. This visualization explores how these metrics interrelate 
+                and the challenges that accompany such rapid housing market growth.
+              </p>
+        </div>
         <!-- Main layout container -->
         <div id="map-container">
             <div class="dropdown-container">
@@ -54,10 +65,14 @@
             </div>
         </div>
         <div id="dynamic-text-container">
-            <p id="text-description">Select a state to see percentage changes.</p>
+            <p>Explore how housing prices, population, job growth, and median income vary across states. Select from the dropdown the specific urban growth variable you want to visualize, as well as choose the year.
+                Click on a state to compare changes between 2012 and the selected year. Observe how housing prices outpace other metrics 
+                in nearly every state, reshaping the economic landscape.</p>
         </div>
 
+
         </div>
+
     </div>
 
     <!-- Tooltip for map interaction -->
@@ -66,5 +81,7 @@
     <!-- JavaScript files -->
     <script src="js/script.js"></script>  
     <script src="js/map.js"></script>
+
+
 </body>
 </html>

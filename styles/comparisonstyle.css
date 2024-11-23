@@ -157,3 +157,30 @@ svg {
     transform: translateX(-50%);
     white-space: nowrap; /* Prevent text wrapping */
 }
+
+#footer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+
+.youtube-button {
+    display: inline-block;
+    background-color: #FF0000;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.youtube-button:hover {
+    background-color: #CC0000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}

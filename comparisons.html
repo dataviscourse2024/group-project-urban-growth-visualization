@@ -20,6 +20,8 @@
                 window.location.href = "groupproject.html"; // Replace with your target HTML file
             }
         </script>
+        <a href="https://youtu.be/VeeJf4gAHz0" target="_blank" class="youtube-button">Watch Screencast</a>
+
     </div>
 
     <!-- Plot Container -->
@@ -33,7 +35,11 @@
                 <div id="checkbox-container"></div>
             </div>
             <div class="plot-description">
-                <p>The line chart shows trends over time for selected variables. You can use the checkboxes to customize the data displayed.</p>
+                <p>
+                    The line chart shows percentage changes over time, starting from 2012, and can hover over the line chart to see the amounts for the US for that year. 
+                    While population, job growth, and median income show moderate increases, housing prices 
+                    skyrocket, creating an imbalance that underscores affordability challenges in urban areas.
+                  </p>
             </div>
         </div>
 
@@ -67,7 +73,11 @@
                 </div>
             </div>
             <div class="plot-description">
-                <p>The bubble plot represents the relationship between two selected variables, with bubble sizes indicating the magnitude of a third factor. You can adjust the axes using the dropdown menus.</p>
+                <p>
+                    The bubble chart visualizes the relationships between two variables. 
+                    Use the dropdowns to compare trends and hover over circles to show the information for the specific state. Notice how housing prices, represented on one axis, 
+                    consistently outpace changes in population or median income, indicating a significant disparity in growth rates. 
+                  </p>
             </div>
         </div>
 
@@ -79,7 +89,11 @@
                 <svg id="heatmap-plot"></svg>
             </div>
             <div class="plot-description">
-                <p>The correlation heatmap shows the relationships between different variables. Darker colors indicate stronger correlations, either positive or negative.</p>
+                <p>
+                    The correlation heatmap illustrates the relationships between various factors where blue represents stronger relationships and washed out green represent weak relationships. Can also over hover the specfic cell to see the exact correlation value. 
+                    Strong positive correlations exist between population and number of jobs, a relatively strong relationship exist between housing prices and income. However, housing prices and population and number of jobs
+                    show a weaker correlation, suggesting that other factors drive their growth.
+                  </p>
             </div>
         </div>
     </div>
@@ -89,7 +103,12 @@
     <script src="js/comparisonlinechart.js"></script>
     <script src="js/bubblechart.js"></script>
     <script src="js/heatmap.js"></script>
+
+
+
 </body>
+
+
 </html>
 
 

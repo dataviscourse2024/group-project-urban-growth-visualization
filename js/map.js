@@ -68,7 +68,6 @@ class Map {
 
             // Update colorScale calculation
             const valuesForYear = globalApplicationState.currData
-                .filter(d => +d.Year === +year && d.State !== "United States")
                 .map(d => +d.Value); // Ensure numeric conversion
         
             const minValue = d3.min(valuesForYear) || 0; // Handle empty arrays
@@ -250,16 +249,22 @@ class Map {
             let textUpdates = selectedStates.map(state => {
                 const dataForState = currData.filter(d => d.State === state);
                 const value2012 = dataForState.find(d => +d.Year === 2012)?.Value || 0;
-                const value2024 = dataForState.find(d => +d.Year === 2024)?.Value || 0;
+                const valueSelected = dataForState.find(d => +d.Year === globalApplicationState.selectedYear)?.Value || 0;
         
                 if (value2012 === 0) {
                     return `${state}: Data unavailable for 2012.`;
                 }
         
-                const percentageChange = ((value2024 - value2012) / value2012 * 100).toFixed(2);
-                const changeDirection = percentageChange > 0 ? "increased" : "decreased";
+                const percentageChange = ((valueSelected - value2012) / value2012 * 100).toFixed(2);
+
+                if(globalApplicationState.selectedYear === 2012){
+                    return `${state} had a ${datasetName} of ${value2012} in 2012.`;
+                }else{
+                    const changeDirection = percentageChange > 0 ? "increased" : "decreased";
         
-                return `${state} has ${changeDirection} in ${datasetName} by ${Math.abs(percentageChange)}% from 2012 to 2024.`;
+                    return `${state} has ${changeDirection} in ${datasetName} by ${Math.abs(percentageChange)}% from 2012 to ${globalApplicationState.selectedYear}.`;
+                }
+
             });
         
             d3.select("#dynamic-text").html(textUpdates.join("<br>"));
