@@ -1,7 +1,7 @@
-# Project Title
+# Urban Growth Visualization 
 
 **Overview**  
-This project implements [briefly describe the purpose of the project, e.g., "interactive data visualizations to compare various metrics"]. It consists of custom HTML, CSS, and JavaScript files, as well as a structured data folder that stores visualization datasets.
+This project implements interactive data visualization of urban growth factors from 2012-2024: housing prices, population, number of jobs, and median income. This project consists of custom html, css and javascript files using the d3 javascript library. 
 
 ---
 
