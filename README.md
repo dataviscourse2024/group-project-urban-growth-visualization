@@ -34,10 +34,10 @@ The project is organized as follows:
 
 ## Project URLs
 
-1. [**Project Website**](https://www.youtube.com/watch?v=VeeJf4gAHz0)
+1. [**Video Demo**](https://www.youtube.com/watch?v=VeeJf4gAHz0)
 
 
-2. [**Screencast Video**](https://dataviscourse2024.github.io/group-project-urban-growth-visualization/index.html)  
+2. [**Live Project Website**](https://dataviscourse2024.github.io/group-project-urban-growth-visualization/index.html)  
 
 
 ---
