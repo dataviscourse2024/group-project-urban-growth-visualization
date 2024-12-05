@@ -140,6 +140,58 @@ svg {
     cursor: pointer;
 }
 
+#slider-container {
+    display: flex;
+    align-items: center; /* Vertically align slider and label */
+    justify-content: flex-start; /* Align items horizontally from left to right */
+    gap: 10px; /* Add spacing between the label and the slider */
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+#slider-container input[type="range"] {
+    -webkit-appearance: none; /* Remove default styling */
+    appearance: none;
+    width: 100%;
+    height: 10px; /* Slightly thicker for better usability */
+    background: linear-gradient(to right, #cccccc, #666666); /* Neutral gradient */
+    border-radius: 5px; /* Rounded corners */
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+#slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Remove default styling */
+    appearance: none;
+    width: 20px; /* Thumb size */
+    height: 20px;
+    background: radial-gradient(circle, #ffffff 40%, #aaaaaa 70%); /* Radial gradient for a 3D effect */
+    border: 2px solid #666666; /* Subtle border for contrast */
+    border-radius: 50%; /* Make it circular */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Glow effect */
+    cursor: pointer;
+    transition: transform 0.2s ease; /* Add animation for interactivity */
+}
+
+#slider-container input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2); /* Slightly enlarge on hover */
+}
+
+#slider-container input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #ffffff 40%, #aaaaaa 70%);
+    border: 2px solid #666666;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+#slider-container input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
 .tooltip {
     position: absolute;
     background: rgba(0, 0, 0, 0.7);
@@ -165,6 +217,36 @@ svg {
     z-index: 1000;
 }
 
+button {
+    background-color: white;
+    color: #333333; /* Neutral text color */
+    font-size: 14px; /* Adjust font size for readability */
+    font-weight: bold; /* Make the text stand out */
+    padding: 5px 15px; /* Add padding for a spacious feel */
+    border: 2px solid #666666; /* Border for contrast */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    cursor: pointer; /* Pointer cursor for interactivity */
+    transition: all 0.3s ease; /* Smooth transition for hover and focus effects */
+  }
+  
+  button:hover {
+    background-color: #444444;
+    color: white;
+    border-color: #333333; /* Darken border on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhance shadow for a lifted effect */
+  }
+  
+  button:active {
+    background: #444444;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow for pressed effect */
+    transform: translateY(0); /* Reset lift on active */
+  }
+  
+  button:focus {
+    outline: none; /* Remove default focus outline */
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4); /* Add a glowing effect on focus */
+  }
 
 .youtube-button {
     display: inline-block;
