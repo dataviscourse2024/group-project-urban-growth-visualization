@@ -1,8 +1,12 @@
 body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
   background-color: #e7e7e7;
+  margin-bottom: 300px;
 }
 
 h1 {
@@ -15,19 +19,19 @@ h1 {
   justify-content: center;
   align-items: center;
   margin: 20px;
-  gap: 10px; /* Add spacing between dropdown and slider */
+  gap: 10px;
 }
 
 #year-slider {
-  width: 200px; /* Adjust the slider width */
-  margin-left: 10px; /* Add spacing between label and slider */
+  width: 200px;
+  margin-left: 10px;
 }
 
 
 #main-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   margin: 20px;
 }
 
@@ -36,23 +40,21 @@ h1 {
     background-color: rgb(39, 39, 39);
     color: white;
     text-align: center;
-    padding: 10px;
+    padding: 10px 0;
     font-size: 20px;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 #map-container {
-  position: relative;
-  display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  align-items: center; /* Center the content horizontally */
-  justify-content: flex-start;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 14px auto;
-  margin-left: 14px;
   padding: 10px;
-  background-color: #c3f3ff;
+  background-color: white;
   border-radius: 15px;
 }
 
@@ -61,50 +63,50 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 20px; /* Space between map and legend */
+  margin-top: 20px;
   color: #444444;
   background-color: #ffffff;
   padding: 15px;
   border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow for clarity */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 #scroll-bar-container {
   display: flex;
-  align-items: center; /* Vertically align slider and label */
-  justify-content: flex-start; /* Align items horizontally from left to right */
-  gap: 10px; /* Add spacing between the label and the slider */
-  white-space: nowrap; /* Prevent text from wrapping */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
 }
 
 
 #scroll-bar-container input[type="range"] {
-  -webkit-appearance: none; /* Remove default styling */
+  -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 10px; /* Slightly thicker for better usability */
-  background: linear-gradient(to right, #cccccc, #666666); /* Neutral gradient */
-  border-radius: 5px; /* Rounded corners */
+  height: 10px;
+  background: linear-gradient(to right, #cccccc, #666666); 
+  border-radius: 5px; 
   outline: none;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #scroll-bar-container input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Remove default styling */
+  -webkit-appearance: none;
   appearance: none;
-  width: 20px; /* Thumb size */
+  width: 20px;
   height: 20px;
-  background: radial-gradient(circle, #ffffff 40%, #aaaaaa 70%); /* Radial gradient for a 3D effect */
-  border: 2px solid #666666; /* Subtle border for contrast */
-  border-radius: 50%; /* Make it circular */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Glow effect */
+  background: radial-gradient(circle, #ffffff 40%, #aaaaaa 70%);
+  border: 2px solid #666666; 
+  border-radius: 50%; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
   cursor: pointer;
-  transition: transform 0.2s ease; /* Add animation for interactivity */
+  transition: transform 0.2s ease; 
 }
 
 #scroll-bar-container input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2); /* Slightly enlarge on hover */
+  transform: scale(1.2);
 }
 
 #scroll-bar-container input[type="range"]::-moz-range-thumb {
@@ -164,88 +166,91 @@ h1 {
 }
 
 #datasetSelect {
-  -webkit-appearance: none; /* Remove default styling */
+  -webkit-appearance: none;
   appearance: none;
-  width: 200px; /* Set width for consistency */
-  padding: 10px; /* Add padding for a more spacious look */
-  font-size: 16px; /* Adjust font size for readability */
-  color: #333333; /* Neutral text color */
-  background: white;
-  color: #444444;
-  border: 2px solid #666666; /* Border for contrast */
-  border-radius: 5px; /* Rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  width: 200px;
+  padding: 7px;
+  font-size: 16px;
+  color: #333333;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23444444' d='M2 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right 10px center; /* Add a custom arrow pointing down */
+  background-size: 10px 10px;
+  border: 2px solid #666666;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: all 0.2s ease; /* Smooth transition for hover effect */
+  transition: all 0.2s ease;
 }
 
 #datasetSelect:hover {
-  background: #444444;
-  border-color: #333333; /* Darken the border on hover */
+  background: #444444 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23ffffff' d='M2 5L0 3h4z'/%3E%3C/svg%3E") no-repeat right 10px center;
+  background-size: 10px 10px;
+  border-color: #333333;
   color: white;
 }
 
 #datasetSelect:focus {
-  outline: none; /* Remove default focus outline */
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4); /* Glow effect when focused */
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
 }
 
 #datasetSelect option {
-  color: white; /* Neutral text color for options */
-  background: #444444; /* Ensure options have a clean background */
+  color: white;
+  background: #444444;
   font-size: 16px;
 }
 
 button {
   background-color: white;
-  color: #333333; /* Neutral text color */
-  font-size: 14px; /* Adjust font size for readability */
-  font-weight: bold; /* Make the text stand out */
-  padding: 5px 15px; /* Add padding for a spacious feel */
-  border: 2px solid #666666; /* Border for contrast */
-  border-radius: 5px; /* Rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-  cursor: pointer; /* Pointer cursor for interactivity */
-  transition: all 0.3s ease; /* Smooth transition for hover and focus effects */
+  color: #333333;
+  margin: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 12px;
+  border: 2px solid #666666;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 button:hover {
   background-color: #444444;
   color: white;
-  border-color: #333333; /* Darken border on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhance shadow for a lifted effect */
+  border-color: #333333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 button:active {
   background: #444444;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow for pressed effect */
-  transform: translateY(0); /* Reset lift on active */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
 }
 
 button:focus {
-  outline: none; /* Remove default focus outline */
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4); /* Add a glowing effect on focus */
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
 }
 
 .vis-container{
+  width: 80%;
+  margin: 20px;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
-
-
 
 .youtube-button {
   display: inline-block;
   background-color: #FF0000;
+  margin: 10px;
   color: white;
   text-align: center;
   text-decoration: none;
   font-size: 14px;
   font-weight: bold;
   padding: 8px 12px;
-  border-radius: 5px;
+  border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s, box-shadow 0.3s;
 }
