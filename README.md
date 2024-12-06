@@ -29,6 +29,10 @@ The project is organized as follows:
 
 4. **Data Folder**  
    - Contains data files used in the visualizations.
+   - See the Process Book (section 'Sources for initial data') for the sources of the data.
+
+5. **Process Book**
+   - Contains logs of the entire process of creating this visualization.
 
 ---
 

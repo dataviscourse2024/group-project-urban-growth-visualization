@@ -6,7 +6,6 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   background-color: #e7e7e7;
-  margin-bottom: 300px;
 }
 
 h1 {
@@ -36,14 +35,16 @@ h1 {
 }
 
 .ribbon {
-    width: 100%;
-    background-color: rgb(39, 39, 39);
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    font-size: 20px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: auto;
+  width: 100%;
+  background-color: rgb(39, 39, 39);
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
 }
 
 #map-container {
